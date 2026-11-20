@@ -26,6 +26,21 @@ describe('estrutura', () => {
     expect(parseReference('ex 20')?.book).toBe(1);
     expect(parseReference('2 timoteo 3:16')).toEqual({ book: 54, chapter: 3, verse: 16 });
   });
+  it('referências: versículo inexistente, romanos e nomes alternativos', () => {
+    expect(parseReference('Gn 1:999')).toBeNull();
+    expect(parseReference('Gn 1:0')).toBeNull();
+    expect(parseReference('Gn 1:31')).toEqual({ book: 0, chapter: 1, verse: 31 });
+    expect(parseReference('II Coríntios 5:17')).toEqual({ book: 46, chapter: 5, verse: 17 });
+    expect(parseReference('I João 4:8')?.book).toBe(61);
+    expect(parseReference('III João 1')?.book).toBe(63);
+    expect(parseReference('ii reis 2')?.book).toBe(11);
+    expect(parseReference('Cânticos 1:1')?.book).toBe(21);
+    expect(parseReference('Cântico dos Cânticos 2')?.book).toBe(21);
+    expect(parseReference('Atos dos Apóstolos 2:1')).toEqual({ book: 43, chapter: 2, verse: 1 });
+    expect(parseReference('Salmo 23')?.book).toBe(18);
+    expect(parseReference('o amor de deus 3')).toBeNull();
+    expect(parseReference('Isaías 41:10')?.book).toBe(22);
+  });
   it('agrupa segmentos', () => {
     const ids = [chapterId(0, 1), chapterId(0, 2), chapterId(0, 3), chapterId(1, 1)];
     expect(toSegments(ids).map((s) => segmentLabel(s))).toEqual(['Gênesis 1–3', 'Êxodo 1']);

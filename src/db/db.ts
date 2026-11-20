@@ -71,7 +71,7 @@ export function useSettings(): { settings: Settings; ready: boolean } {
   const rows = useLiveQuery(() => db.kv.toArray(), []);
   return useMemo(() => {
     const s: Settings = { ...DEFAULTS };
-    if (rows) for (const r of rows) if (r.key in DEFAULTS) (s as unknown as Record<string, unknown>)[r.key] = r.value;
+    if (rows) for (const r of rows) if (Object.hasOwn(DEFAULTS, r.key)) (s as unknown as Record<string, unknown>)[r.key] = r.value;
     return { settings: s, ready: rows !== undefined };
   }, [rows]);
 }
@@ -173,7 +173,7 @@ export async function importBackup(b: BackupFile) {
     await db.progress.bulkPut(b.progress);
     await db.log.bulkPut(b.log);
     await db.marks.bulkPut(b.marks);
-    await db.kv.bulkPut(b.kv);
+    await db.kv.bulkPut(b.kv.filter((r) => Object.hasOwn(DEFAULTS, r.key)));
   });
 }
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { BOOKS, TOTAL_CHAPTERS, chapterId, fromChapterId, isValidChapter } from '../data/books';
 import { TRANSLATIONS, translationById } from '../data/bible';
@@ -33,6 +33,7 @@ export default function Reader() {
 
 function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
   const nav = useNavigate();
+  const location = useLocation();
   const [sp] = useSearchParams();
   const { settings, read, mark, unmark, toast } = useApp();
   const tr = settings.translation;
@@ -58,7 +59,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [verses]);
+  }, [verses, sp]);
 
   // Marcação automática ao chegar no fim (opcional)
   useEffect(() => {
@@ -76,7 +77,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
     const n = id + delta;
     if (n < 0 || n >= TOTAL_CHAPTERS) return;
     const t = fromChapterId(n);
-    nav(`/ler/${t.book}/${t.chapter}`);
+    nav(`/ler/${t.book}/${t.chapter}`, { replace: true }); // não empilha histórico: "voltar" leva à origem
   }, [id, nav]);
 
   // Navegação por setas do teclado (desktop)
@@ -111,7 +112,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
   return (
     <div className="reader">
       <header className="reader-top">
-        <button className="icon-btn" aria-label="Voltar ao livro" onClick={() => nav(`/biblia/${book}`)}>‹</button>
+        <button className="icon-btn" aria-label="Voltar ao livro" onClick={() => (location.key !== 'default' ? nav(-1) : nav(`/biblia/${book}`))}>‹</button>
         <Link to={`/biblia/${book}`} className="reader-title">
           {bookInfo.name} <strong>{chapter}</strong>
         </Link>

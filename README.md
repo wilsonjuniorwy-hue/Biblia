@@ -25,3 +25,9 @@ npm run icons      # regenera os ícones do PWA a partir de public/favicon.svg
 ## Para ligar o Supabase depois
 O progresso é um mapa `capítulo → data` (`progress`) + `log` + `marks` + `kv`. O backup (`exportBackup`/`importBackup`
 em `src/db/db.ts`) já serializa tudo; é o ponto natural para sincronizar.
+
+## Telas
+- `/` Entrada com duas portas: **Igreja** e **Estudos bíblicos**
+- `/igreja` Programação, próximos eventos, avisos, contato e PIX. **Edite `src/data/church.ts`** (e troque `demo` para `false`).
+  Foto própria: coloque em `public/images/igreja.jpg` e use `image: 'images/igreja.jpg'`.
+- `/estudos` Hoje, Bíblia, Plano, Progresso e Mais

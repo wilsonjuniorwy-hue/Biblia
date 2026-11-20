@@ -25,13 +25,13 @@ export function Saved() {
         {rows && list.length === 0 ? (
           <Empty icon={tab === 'fav' ? '❤' : tab === 'color' ? '🖍' : '📝'} title="Nada por aqui ainda" text="Durante a leitura, toque em um versículo para favoritar, destacar ou anotar." />
         ) : null}
-        {list.map((m) => <SavedItem key={m.key} m={m} tr={settings.translation} showNote={tab === 'note'} />)}
+        {list.map((m) => <SavedItem key={m.key} m={m} tr={settings.translation} tab={tab} />)}
       </main>
     </>
   );
 }
 
-function SavedItem({ m, tr, showNote }: { m: MarkRow; tr: TranslationId; showNote: boolean }) {
+function SavedItem({ m, tr, tab }: { m: MarkRow; tr: TranslationId; tab: Tab }) {
   const [text, setText] = useState('');
   useEffect(() => {
     let alive = true;
@@ -44,9 +44,12 @@ function SavedItem({ m, tr, showNote }: { m: MarkRow; tr: TranslationId; showNot
         {BOOKS[m.book].name} {m.chapter}:{m.verse} ({translationById(tr).short})
       </Link>
       <p className="saved-text">{text || '…'}</p>
-      {showNote && m.note ? <p className="note">📝 {m.note}</p> : null}
+      {m.note ? <p className="note">📝 {m.note}</p> : null}
       <div className="row gap">
-        <button className="btn ghost small" onClick={() => void patchMark(m.book, m.chapter, m.verse, { fav: 0, color: null, note: '' })}>Remover tudo</button>
+        <button className="btn ghost small" onClick={() => void patchMark(m.book, m.chapter, m.verse, tab === 'fav' ? { fav: 0 } : tab === 'color' ? { color: null } : { note: '' })}>
+          {tab === 'fav' ? 'Remover dos favoritos' : tab === 'color' ? 'Remover destaque' : 'Apagar nota'}
+        </button>
+        <Link className="btn ghost small" to={`/ler/${m.book}/${m.chapter}?v=${m.verse}`}>Abrir no capítulo</Link>
       </div>
     </section>
   );

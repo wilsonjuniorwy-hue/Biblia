@@ -22,9 +22,10 @@ export function PageHeader({ title, sub, back, right }: { title: string; sub?: s
 
 export function TabBar() {
   const { pathname } = useLocation();
+  const inMore = pathname.startsWith('/mais') || pathname.startsWith('/salvos') || pathname.startsWith('/sobre');
   const inBible = pathname.startsWith('/biblia') || pathname.startsWith('/topicos') || pathname.startsWith('/buscar');
   const items: [string, string, string][] = [
-    ['/', 'Hoje', '☀︎'],
+    ['/estudos', 'Hoje', '☀︎'],
     ['/biblia', 'Bíblia', '📖'],
     ['/plano', 'Plano', '🗓'],
     ['/progresso', 'Progresso', '📊'],
@@ -33,7 +34,7 @@ export function TabBar() {
   return (
     <nav className="tabbar" aria-label="Navegação principal">
       {items.map(([to, label, icon]) => (
-        <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => ((to === '/biblia' ? inBible : isActive) ? 'tab active' : 'tab')}>
+        <NavLink key={to} to={to} end={to === '/estudos'} className={({ isActive }) => ((to === '/biblia' ? inBible : to === '/mais' ? inMore : isActive) ? 'tab active' : 'tab')}>
           <span className="tab-icon" aria-hidden>{icon}</span>
           <span>{label}</span>
         </NavLink>

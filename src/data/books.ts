@@ -107,21 +107,38 @@ export function normalize(s: string): string {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
+/** Nomes alternativos comuns (já sem acento e sem espaços). */
+const ALIASES: Record<string, string> = {
+  canticos: 'Ct', canticodoscanticos: 'Ct', canticodecantares: 'Ct', cantares: 'Ct', cantaresdesalomao: 'Ct',
+  atosdosapostolos: 'At', apocalipsedejoao: 'Ap', revelacao: 'Ap', salmo: 'Sl', proverbio: 'Pv', eclesiastes: 'Ec',
+};
+
 /**
- * Interpreta "João 3:16", "1 Co 13", "Sl 23:1". Retorna null se não for uma referência válida.
+ * Interpreta "João 3:16", "1 Co 13", "II Coríntios 5:17", "Cânticos 1:1", "Atos dos Apóstolos 2".
+ * Retorna null se não for uma referência válida (livro, capítulo e versículo existentes).
  * Prioriza a grafia exata (com acento) para distinguir "Jo" (João) de "Jó".
  */
 export function parseReference(input: string): { book: number; chapter: number; verse?: number } | null {
-  const m = input.toLowerCase().trim().match(/^([1-3]?\s?\p{L}+)\.?\s*(\d+)(?:\s*[:.,]\s*(\d+))?\s*$/u);
+  const m = input.toLowerCase().trim().match(/^(.+?)\.?\s*(\d+)(?:\s*[:.,]\s*(\d+))?\s*$/u);
   if (!m) return null;
-  const exact = m[1].replace(/\s/g, '');
+  // numeral romano no começo ("II Coríntios") vira algarismo
+  const roman = m[1].trim().replace(/^(iii|ii|i)(?=\s|\.)\.?\s*/u, (_, r: string) => r.length + ' ');
+  const exact = roman.replace(/[\s.]/g, '');
+  if (!/^[\p{L}\d]+$/u.test(exact)) return null;
   const plain = normalize(exact);
   const sq = (x: string) => x.toLowerCase().replace(/\s/g, '');
+  const flat = (x: string) => normalize(x).replace(/\s/g, '');
   let book = BOOKS.findIndex((b) => sq(b.name) === exact || sq(b.abbr) === exact);
-  if (book < 0) book = BOOKS.findIndex((b) => normalize(b.name).replace(/\s/g, '') === plain || normalize(b.abbr) === plain);
-  if (book < 0 && plain.length >= 3) book = BOOKS.findIndex((b) => normalize(b.name).replace(/\s/g, '').startsWith(plain));
+  if (book < 0) book = BOOKS.findIndex((b) => flat(b.name) === plain || flat(b.abbr) === plain);
+  if (book < 0 && ALIASES[plain]) book = BOOKS.findIndex((b) => b.abbr === ALIASES[plain]);
+  if (book < 0 && plain.length >= 3) book = BOOKS.findIndex((b) => flat(b.name).startsWith(plain));
   if (book < 0) return null;
   const chapter = Number(m[2]);
   if (!isValidChapter(book, chapter)) return null;
-  return { book, chapter, verse: m[3] ? Number(m[3]) : undefined };
+  if (m[3]) {
+    const verse = Number(m[3]);
+    if (verse < 1 || verse > VERSE_COUNTS[book][chapter - 1]) return null;
+    return { book, chapter, verse };
+  }
+  return { book, chapter };
 }

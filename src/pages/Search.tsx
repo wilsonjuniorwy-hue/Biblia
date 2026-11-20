@@ -6,19 +6,27 @@ import { BOOKS, normalize, parseReference } from '../data/books';
 import { PageHeader } from '../components/ui';
 
 interface Entry { book: number; chapter: number; verse: number; text: string; norm: string }
-const indexCache = new Map<TranslationId, Entry[]>();
 
-async function buildIndex(tr: TranslationId, onProgress: (n: number) => void): Promise<Entry[]> {
-  const hit = indexCache.get(tr);
-  if (hit) return hit;
-  const out: Entry[] = [];
-  for (let b = 0; b < BOOKS.length; b++) {
-    const book = await loadBook(tr, b);
-    book.forEach((ch, ci) => ch.forEach((text, vi) => out.push({ book: b, chapter: ci + 1, verse: vi + 1, text, norm: normalize(text) })));
-    onProgress(b + 1);
+// Guarda a promessa em andamento: remontagens rápidas reaproveitam a mesma indexação.
+const indexCache = new Map<TranslationId, Promise<Entry[]>>();
+const progressListeners = new Set<(tr: TranslationId, n: number) => void>();
+
+function buildIndex(tr: TranslationId): Promise<Entry[]> {
+  let p = indexCache.get(tr);
+  if (!p) {
+    p = (async () => {
+      const out: Entry[] = [];
+      for (let b = 0; b < BOOKS.length; b++) {
+        const book = await loadBook(tr, b);
+        book.forEach((ch, ci) => ch.forEach((text, vi) => out.push({ book: b, chapter: ci + 1, verse: vi + 1, text, norm: normalize(text) })));
+        progressListeners.forEach((l) => l(tr, b + 1));
+      }
+      return out;
+    })();
+    p.catch(() => indexCache.delete(tr)); // permite tentar de novo
+    indexCache.set(tr, p);
   }
-  indexCache.set(tr, out);
-  return out;
+  return p;
 }
 
 const MAX = 100;
@@ -28,34 +36,47 @@ export default function SearchPage() {
   const tr = settings.translation;
   const [sp, setSp] = useSearchParams();
   const nav = useNavigate();
-  const initial = sp.get('q') ?? '';
-  const [q, setQ] = useState(initial);
-  const [index, setIndex] = useState<Entry[] | null>(indexCache.get(tr) ?? null);
+  const urlQ = sp.get('q') ?? '';
+  const [q, setQ] = useState(urlQ);
+  const [index, setIndex] = useState<Entry[] | null>(null);
   const [loadedBooks, setLoadedBooks] = useState(0);
   const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const lastWritten = useRef(urlQ);
 
-  // Mantém o texto da URL em sincronia (com atraso, para não poluir o histórico)
-  useEffect(() => {
-    const t = setTimeout(() => {
-      const cur = sp.get('q') ?? '';
-      if (q.trim() !== cur) setSp(q.trim() ? { q: q.trim() } : {}, { replace: true });
+  // Digitar atualiza a URL (com atraso, sem empilhar histórico)
+  const onChange = (v: string) => {
+    setQ(v);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      lastWritten.current = v.trim();
+      setSp(v.trim() ? { q: v.trim() } : {}, { replace: true });
     }, 400);
-    return () => clearTimeout(t);
-  }, [q, sp, setSp]);
+  };
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  // Voltar/avançar do navegador (URL mudou por fora) atualiza o campo
+  useEffect(() => {
+    if (urlQ === lastWritten.current) return;
+    lastWritten.current = urlQ;
+    clearTimeout(timer.current);
+    setQ(urlQ);
+  }, [urlQ]);
 
   useEffect(() => {
     let alive = true;
     setError(false);
-    const cached = indexCache.get(tr);
-    if (cached) { setIndex(cached); return; }
     setIndex(null);
     setLoadedBooks(0);
-    buildIndex(tr, (n) => { if (alive) setLoadedBooks(n); })
+    const listener = (t: TranslationId, n: number) => { if (alive && t === tr) setLoadedBooks(n); };
+    progressListeners.add(listener);
+    buildIndex(tr)
       .then((i) => { if (alive) setIndex(i); })
       .catch(() => { if (alive) setError(true); });
-    return () => { alive = false; };
-  }, [tr]);
+    return () => { alive = false; progressListeners.delete(listener); };
+  }, [tr, retry]);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
@@ -121,11 +142,16 @@ export default function SearchPage() {
       <PageHeader title="Buscar" sub={`em ${translationById(tr).name}`} back />
       <main className="page">
         <input
-          ref={inputRef} className="search-input" type="search" value={q} onChange={(e) => setQ(e.target.value)}
+          ref={inputRef} className="search-input" type="search" value={q} onChange={(e) => onChange(e.target.value)}
           placeholder="Palavra, frase ou referência (João 3:16)" aria-label="Buscar"
           onKeyDown={(e) => { if (e.key === 'Enter' && ref) nav(`/ler/${ref.book}/${ref.chapter}${ref.verse ? `?v=${ref.verse}` : ''}`); }}
         />
-        {error ? <p className="center">Não foi possível carregar o texto. Verifique a conexão.</p> : null}
+        {error ? (
+          <div className="center">
+            <p>Não foi possível carregar o texto. Verifique a conexão.</p>
+            <button className="btn primary" onClick={() => setRetry((n) => n + 1)}>Tentar de novo</button>
+          </div>
+        ) : null}
         {!index && !error ? <p className="muted">Preparando a busca… {Math.round((loadedBooks / 66) * 100)}% (só na primeira vez)</p> : null}
 
         {ref ? (

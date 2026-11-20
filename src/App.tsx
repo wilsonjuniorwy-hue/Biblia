@@ -4,6 +4,8 @@ import { AppProvider, useApp } from './app/AppContext';
 import { db } from './db/db';
 import { TabBar, Toasts } from './components/ui';
 import Home from './pages/Home';
+import Welcome from './pages/Welcome';
+import Church from './pages/Church';
 import { Bible, BookPage } from './pages/Bible';
 import Reader from './pages/Reader';
 import PlanPage from './pages/Plan';
@@ -36,7 +38,7 @@ function Shell() {
   useEffect(() => { if (!pathname.startsWith('/ler/')) window.scrollTo(0, 0); }, [pathname]);
 
   if (!ready) return <div className="splash">📖</div>;
-  const reading = pathname.startsWith('/ler/');
+  const reading = pathname.startsWith('/ler/') || pathname === '/' || pathname === '/igreja';
   return (
     <div className="app">
       <Outlet />
@@ -52,7 +54,9 @@ export default function App() {
       <HashRouter>
         <Routes>
           <Route element={<Shell />}>
-            <Route index element={<Home />} />
+            <Route index element={<Welcome />} />
+            <Route path="igreja" element={<Church />} />
+            <Route path="estudos" element={<Home />} />
             <Route path="biblia" element={<Bible />} />
             <Route path="biblia/:book" element={<BookPage />} />
             <Route path="ler/:book/:chapter" element={<Reader />} />

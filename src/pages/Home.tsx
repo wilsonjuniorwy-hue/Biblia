@@ -31,7 +31,8 @@ export default function Home() {
   return (
     <>
       <PageHeader
-        title="Lâmpada"
+        title="Estudos bíblicos"
+        back="/"
         sub={formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' })}
         right={<Link to="/buscar" className="icon-btn" aria-label="Buscar">🔎</Link>}
       />
