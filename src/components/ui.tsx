@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 
@@ -68,10 +68,10 @@ export function Toasts() {
   );
 }
 
-export function ProgressBar({ value, className = '' }: { value: number; className?: string }) {
+export function ProgressBar({ value, label, className = '' }: { value: number; label: string; className?: string }) {
   const pct = Math.max(0, Math.min(1, value)) * 100;
   return (
-    <div className={`bar ${className}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.floor(pct)}>
+    <div className={`bar ${className}`} role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.floor(pct)}>
       <span style={{ width: `${pct}%` }} />
     </div>
   );
@@ -108,17 +108,37 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
   );
 }
 
+const FOCUSABLE = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function Sheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title?: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const opener = document.activeElement as HTMLElement | null;
+    const box = ref.current;
+    // foco inicial: o primeiro campo/botão da janela (ou a própria janela)
+    (box?.querySelector<HTMLElement>(FOCUSABLE) ?? box)?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key !== 'Tab' || !box) return;
+      const items = [...box.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+      if (items.length === 0) { e.preventDefault(); box.focus(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === box)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      opener?.focus?.({ preventScroll: true }); // devolve o foco a quem abriu
+    };
   }, [open, onClose]);
   if (!open) return null;
   return (
     <div className="sheet-wrap" onClick={onClose}>
-      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+      <div className="sheet" ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-grip" />
         {title ? <h2>{title}</h2> : null}
         {children}
@@ -145,7 +165,7 @@ export function Empty({ icon, title, text, children }: { icon: string; title: st
   return (
     <div className="empty">
       <div className="empty-icon" aria-hidden>{icon}</div>
-      <h3>{title}</h3>
+      <h2>{title}</h2>
       {text ? <p className="muted">{text}</p> : null}
       {children}
     </div>

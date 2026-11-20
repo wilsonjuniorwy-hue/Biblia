@@ -124,11 +124,13 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
           ))}
         </div>
         <div className="font-btns">
-          <button className="icon-btn" aria-label="Diminuir letra" onClick={() => void setSetting('fontSize', Math.max(14, settings.fontSize - 1))}>A−</button>
-          <button className="icon-btn" aria-label="Aumentar letra" onClick={() => void setSetting('fontSize', Math.min(32, settings.fontSize + 1))}>A+</button>
+          <button className="icon-btn font-dec" aria-label="Diminuir letra" onClick={() => void setSetting('fontSize', Math.max(14, settings.fontSize - 1))} />
+          <button className="icon-btn font-inc" aria-label="Aumentar letra" onClick={() => void setSetting('fontSize', Math.min(32, settings.fontSize + 1))} />
         </div>
       </header>
 
+      <main>
+      <h1 className="sr-only">{bookInfo.name} {chapter}</h1>
       <article className="verses" style={{ fontSize: settings.fontSize }}>
         {loading ? <p className="muted center pad">Carregando…</p> : null}
         {error ? (
@@ -145,7 +147,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
             <p
               key={v} id={`v${v}`}
               className={`verse ${m?.color ? `hl-${m.color}` : ''} ${focused ? 'focus' : ''} ${sel === v ? 'selected' : ''}`}
-              role="button" tabIndex={0} aria-label={`Versículo ${v}: ${text}`}
+              role="button" tabIndex={0}
               onClick={() => openVerse(v)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVerse(v); } }}
             >
@@ -172,6 +174,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
         </div>
         <p className="muted small center">Dica: toque em um versículo para favoritar, destacar, anotar ou compartilhar.</p>
       </div>
+      </main>
 
       <Sheet open={sel !== null} onClose={closeSheet} title={sel !== null ? ref(sel) : ''}>
         {sel !== null ? (

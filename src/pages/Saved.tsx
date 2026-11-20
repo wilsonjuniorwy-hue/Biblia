@@ -5,6 +5,7 @@ import { useApp } from '../app/AppContext';
 import { loadBook, translationById, type TranslationId } from '../data/bible';
 import { BOOKS } from '../data/books';
 import { db, patchMark, type MarkRow } from '../db/db';
+import { isValidMark } from '../lib/sanitize';
 import { Empty, PageHeader, Segmented } from '../components/ui';
 
 type Tab = 'fav' | 'color' | 'note';
@@ -14,6 +15,7 @@ export function Saved() {
   const [tab, setTab] = useState<Tab>('fav');
   const rows = useLiveQuery(() => db.marks.toArray(), []);
   const list = (rows ?? [])
+    .filter(isValidMark)
     .filter((m) => (tab === 'fav' ? m.fav : tab === 'color' ? !!m.color : !!m.note.trim()))
     .sort((a, b) => a.book - b.book || a.chapter - b.chapter || a.verse - b.verse);
 

@@ -50,7 +50,7 @@ function Setup({ initial, onDone }: { initial?: PlanType; onDone?: () => void })
       </div>
 
       <section className="card">
-        <h3>Duração</h3>
+        <h2 className="card-title">Duração</h2>
         <div className="row gap wrap">
           {DURATIONS.map((d) => (
             <button key={d} className={`chip ${days === d ? 'on' : ''}`} onClick={() => setDays(d)}>
@@ -108,7 +108,7 @@ function ActivePlan({ plan, read, today }: { plan: PlanConfig; read: Set<number>
           <strong>{PLAN_INFO[plan.type].name} · {plan.days} dias</strong>
           <span className="muted">{Math.floor(pct * 100)}%</span>
         </div>
-        <ProgressBar value={pct} />
+        <ProgressBar value={pct} label={`Plano: ${st.readChapters} de ${st.totalChapters} capítulos lidos`} />
         <p className="muted small">
           {formatDate(plan.startDate, { day: 'numeric', month: 'short', year: 'numeric' })} → {formatDate(st.endDate, { day: 'numeric', month: 'short', year: 'numeric' })}
           {' · '}{st.readChapters}/{st.totalChapters} capítulos do plano lidos

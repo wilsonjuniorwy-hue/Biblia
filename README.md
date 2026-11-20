@@ -31,3 +31,9 @@ em `src/db/db.ts`) já serializa tudo; é o ponto natural para sincronizar.
 - `/igreja` Programação, próximos eventos, avisos, contato e PIX. **Edite `src/data/church.ts`** (e troque `demo` para `false`).
   Foto própria: coloque em `public/images/igreja.jpg` e use `image: 'images/igreja.jpg'`.
 - `/estudos` Hoje, Bíblia, Plano, Progresso e Mais
+
+## Segurança e dados
+- `vercel.json` define uma **Content-Security-Policy estrita** (`connect-src 'self'`, sem scripts de terceiros) e outros cabeçalhos.
+  **Ao integrar o Supabase** (ou qualquer API/anúncio externo), acrescente o domínio em `connect-src` (e `script-src`/`img-src` se for o caso).
+- Tudo que vem do IndexedDB ou de um backup passa por `src/lib/sanitize.ts`: valores inválidos viram o padrão e nunca travam o app.
+- Se o armazenamento do navegador estiver indisponível (janela privada, bloqueio), o app mostra uma explicação em vez de ficar carregando.

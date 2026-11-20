@@ -98,7 +98,7 @@ export function SearchResults({ q, verseLimit, allHref }: { q: string; verseLimi
     <div className="suggest">
       {sugg.matches.length > 0 ? (
         <section aria-label="Livros">
-          <h3 className="group-title">Livros</h3>
+          <h2 className="group-title">Livros</h2>
           <ul className="results">
             {sugg.matches.map((b) => {
               const l = linkFor(b.id);
@@ -117,7 +117,7 @@ export function SearchResults({ q, verseLimit, allHref }: { q: string; verseLimi
 
       {topics.length > 0 ? (
         <section aria-label="Tópicos">
-          <h3 className="group-title">Tópicos</h3>
+          <h2 className="group-title">Tópicos</h2>
           <ul className="results">
             {topics.map((t) => (
               <li key={t.id}>
@@ -133,7 +133,7 @@ export function SearchResults({ q, verseLimit, allHref }: { q: string; verseLimi
 
       {wantVerses ? (
         <section aria-label="Versículos">
-          <h3 className="group-title">Versículos</h3>
+          <h2 className="group-title">Versículos</h2>
           {error ? (
             <div className="center">
               <p>Não foi possível carregar o texto. Verifique a conexão.</p>

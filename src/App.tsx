@@ -3,6 +3,7 @@ import { HashRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-
 import { AppProvider, useApp } from './app/AppContext';
 import { db } from './db/db';
 import { TabBar, Toasts, type Area } from './components/ui';
+import { StorageProblem } from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Welcome from './pages/Welcome';
 import Church from './pages/Church';
@@ -16,7 +17,8 @@ import More from './pages/More';
 import { About, Saved } from './pages/Saved';
 
 function Shell() {
-  const { settings, ready } = useApp();
+  const { settings, ready, dbError } = useApp();
+  const [slow, setSlow] = useState(false);
   const { pathname } = useLocation();
 
   // Área atual (Igreja ou Estudos): define a barra de abas nas telas compartilhadas, como a Bíblia.
@@ -52,7 +54,15 @@ function Shell() {
 
   useEffect(() => { if (!pathname.startsWith('/ler/')) window.scrollTo(0, 0); }, [pathname]);
 
-  if (!ready) return <div className="splash">📖</div>;
+  // Se o armazenamento não responde em alguns segundos, explica em vez de carregar para sempre
+  useEffect(() => {
+    if (ready) { setSlow(false); return; }
+    const t = setTimeout(() => setSlow(true), 7000);
+    return () => clearTimeout(t);
+  }, [ready]);
+
+  if (dbError) return <StorageProblem />;
+  if (!ready) return slow ? <StorageProblem slow /> : <div className="splash" role="status" aria-label="Carregando">📖</div>;
   const reading = pathname.startsWith('/ler/') || pathname === '/';
   return (
     <div className="app">

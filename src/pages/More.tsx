@@ -70,7 +70,7 @@ export default function More() {
       <PageHeader title="Mais" />
       <main className="page">
         <section className="card">
-          <h3>Leitura</h3>
+          <h2 className="card-title">Leitura</h2>
           <div className="field">
             <span>Tradução</span>
             {TRANSLATIONS.map((t) => (
@@ -82,7 +82,7 @@ export default function More() {
           </div>
           <div className="field">
             <span>Tamanho da letra: {settings.fontSize}px</span>
-            <input type="range" min={14} max={32} value={settings.fontSize} onChange={(e) => void setSetting('fontSize', Number(e.target.value))} />
+            <input id="font-size" aria-label="Tamanho da letra" type="range" min={14} max={32} value={settings.fontSize} onChange={(e) => void setSetting('fontSize', Number(e.target.value))} />
             <p className="verse-preview" style={{ fontSize: settings.fontSize }}>No princípio, criou Deus o céu e a terra.</p>
           </div>
           <div className="field">
@@ -97,7 +97,7 @@ export default function More() {
           <div className="field">
             <span>Lembrete diário (aviso dentro do app)</span>
             <div className="row gap">
-              <input type="time" value={settings.reminderTime} onChange={(e) => void setSetting('reminderTime', e.target.value)} />
+              <input id="reminder-time" aria-label="Horário do lembrete diário" type="time" value={settings.reminderTime} onChange={(e) => void setSetting('reminderTime', e.target.value)} />
               {settings.reminderTime ? <button className="btn ghost small" onClick={() => void setSetting('reminderTime', '')}>Desligar</button> : null}
             </div>
             <small className="muted">Mostra um aviso na tela inicial se você ainda não leu depois desse horário.</small>
@@ -105,12 +105,12 @@ export default function More() {
         </section>
 
         <section className="card">
-          <h3>Meu conteúdo</h3>
+          <h2 className="card-title">Meu conteúdo</h2>
           <Link to="/salvos" className="btn ghost">❤ Favoritos, destaques e notas</Link>
         </section>
 
         <section className="card">
-          <h3>Uso offline</h3>
+          <h2 className="card-title">Uso offline</h2>
           <p className="muted small">O texto lido é guardado automaticamente. Baixe tudo para ler sem internet.</p>
           <button className="btn ghost" disabled={!!dl} onClick={() => void download()}>
             {dl ? `Baixando… ${Math.round((dl.done / dl.total) * 100)}%` : `Baixar ${TRANSLATIONS.find((t) => t.id === settings.translation)!.short} para offline`}
@@ -126,7 +126,7 @@ export default function More() {
         </section>
 
         <section className="card">
-          <h3>Backup</h3>
+          <h2 className="card-title">Backup</h2>
           <p className="muted small">Seu progresso, favoritos e notas ficam <strong>somente neste aparelho</strong>. Se limpar os dados do navegador ou trocar de celular, você os perde — a menos que tenha um backup.</p>
           <p className="muted small">Último backup: {settings.lastBackupAt ? new Date(settings.lastBackupAt).toLocaleDateString('pt-BR') : 'nunca'}</p>
           <div className="row gap wrap">
@@ -138,7 +138,7 @@ export default function More() {
         </section>
 
         <section className="card">
-          <h3>Sobre</h3>
+          <h2 className="card-title">Sobre</h2>
           <Link to="/sobre" className="btn ghost">Licenças e créditos</Link>
           <button className="btn danger ghost" onClick={() => setDlg('reset')}>Apagar todos os meus dados</button>
         </section>
@@ -157,7 +157,10 @@ export default function More() {
         onYes={async () => {
           const d = dlg;
           setDlg(null);
-          if (d && typeof d === 'object') { await importBackup(d.backup); toast('Backup restaurado.'); }
+          if (d && typeof d === 'object') {
+            const { skipped } = await importBackup(d.backup);
+            toast(skipped > 0 ? `Backup restaurado. ${skipped} item(ns) inválido(s) foram ignorados.` : 'Backup restaurado.');
+          }
         }}
       />
     </>

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { markRead, unmarkRead, useProgress, useReadDates, useSettings, type Settings } from '../db/db';
+import Dexie from 'dexie';
+import { db, markRead, unmarkRead, useProgress, useReadDates, useSettings, type Settings } from '../db/db';
 import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
 import { bookProgress, streaks } from '../lib/stats';
 import { todayStr } from '../lib/date';
@@ -7,6 +8,8 @@ import { todayStr } from '../lib/date';
 interface Ctx {
   settings: Settings;
   ready: boolean;
+  /** O navegador não deixa o app abrir o armazenamento (janela privada, bloqueio…). */
+  dbError: boolean;
   read: Set<number>;
   readDates: string[];
   today: string;
@@ -44,6 +47,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const readDates = useReadDates();
   const today = useToday();
   const [toasts, setToasts] = useState<{ id: number; msg: string }[]>([]);
+  const [dbError, setDbError] = useState(false);
   const nextId = useRef(1);
   const readRef = useRef(read);
   readRef.current = read;
@@ -53,6 +57,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setToasts((t) => [...t.slice(-2), { id, msg }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 4200);
   }, []);
+
+  // Abre o banco logo de início: se não for possível, mostramos uma explicação em vez de ficar carregando para sempre.
+  useEffect(() => {
+    if (typeof indexedDB === 'undefined') { setDbError(true); return; }
+    db.open().catch(() => setDbError(true));
+  }, []);
+
+  // Falha ao gravar (espaço cheio, banco bloqueado…) não pode passar em silêncio.
+  useEffect(() => {
+    let last = 0;
+    const onRejection = (e: PromiseRejectionEvent) => {
+      const r = e.reason as { name?: string } | undefined;
+      const storage = r instanceof Dexie.DexieError || r?.name === 'QuotaExceededError' || r?.name === 'DatabaseClosedError';
+      if (!storage) return;
+      e.preventDefault();
+      if (Date.now() - last > 8000) { last = Date.now(); toast('Não foi possível salvar no aparelho. Verifique o espaço disponível.'); }
+    };
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => window.removeEventListener('unhandledrejection', onRejection);
+  }, [toast]);
 
   const mark = useCallback(async (ids: number[]) => {
     const before = readRef.current;
@@ -75,7 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const readToday = useMemo(() => readDates.includes(today), [readDates, today]);
 
   const value: Ctx = {
-    settings, ready: sReady && pReady, read, readDates, today, streak, readToday, mark, unmark, toast, toasts,
+    settings, ready: sReady && pReady, dbError, read, readDates, today, streak, readToday, mark, unmark, toast, toasts,
   };
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

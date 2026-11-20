@@ -54,7 +54,7 @@ export function Bible() {
                         <Link key={b.id} to={`/biblia/${b.id}`} className={`book-tile ${p.done ? 'done' : ''}`}>
                           <span className="book-name">{b.name}</span>
                           <span className="muted small">{p.done ? '✓ concluído' : `${p.read}/${p.total}`}</span>
-                          <ProgressBar value={p.read / p.total} />
+                          <ProgressBar value={p.read / p.total} label={`${b.name}: ${p.read} de ${p.total} capítulos lidos`} />
                         </Link>
                       );
                     })}
@@ -109,7 +109,7 @@ function BookInner({ id }: { id: number }) {
             <strong>{p.done ? '✓ Livro concluído' : `${p.read} de ${p.total} lidos`}</strong>
             <span className="muted">{Math.floor((p.read / p.total) * 100)}%</span>
           </div>
-          <ProgressBar value={p.read / p.total} />
+          <ProgressBar value={p.read / p.total} label={`${book.name}: ${p.read} de ${p.total} capítulos lidos`} />
           <div className="row gap wrap">
             {!p.done ? (
               <button className="btn primary grow" onClick={() => nav(`/ler/${id}/${p.nextUnread ?? 1}`)}>

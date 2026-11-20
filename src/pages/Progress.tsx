@@ -43,9 +43,9 @@ export default function ProgressPage() {
 
         <section className="card">
           <div className="row between"><span>Antigo Testamento</span><span className="muted">{s.at}/{s.atTotal}</span></div>
-          <ProgressBar value={s.atPct} />
+          <ProgressBar value={s.atPct} label={`Antigo Testamento: ${s.at} de ${s.atTotal} capítulos lidos`} />
           <div className="row between"><span>Novo Testamento</span><span className="muted">{s.nt}/{s.ntTotal}</span></div>
-          <ProgressBar value={s.ntPct} />
+          <ProgressBar value={s.ntPct} label={`Novo Testamento: ${s.nt} de ${s.ntTotal} capítulos lidos`} />
           <p className="muted small">Você leu em {activeDays} {activeDays === 1 ? 'dia' : 'dias'} diferentes{settings.completedReadings ? ` · já completou a Bíblia ${settings.completedReadings}×` : ''}.</p>
         </section>
 

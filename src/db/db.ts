@@ -5,6 +5,7 @@ import type { TranslationId } from '../data/bible';
 import type { PlanConfig } from '../data/plans';
 import { TOTAL_CHAPTERS } from '../data/books';
 import { todayStr } from '../lib/date';
+import { isValidDateStr, isValidMark, sanitizeMark, sanitizeSettings } from '../lib/sanitize';
 
 export interface ProgressRow { id: number; readAt: number; date: string }
 export interface LogRow { key: string; date: string; chapter: number }
@@ -70,9 +71,10 @@ export async function setSetting<K extends keyof Settings>(key: K, value: Settin
 export function useSettings(): { settings: Settings; ready: boolean } {
   const rows = useLiveQuery(() => db.kv.toArray(), []);
   return useMemo(() => {
-    const s: Settings = { ...DEFAULTS };
-    if (rows) for (const r of rows) if (Object.hasOwn(DEFAULTS, r.key)) (s as unknown as Record<string, unknown>)[r.key] = r.value;
-    return { settings: s, ready: rows !== undefined };
+    const raw: Record<string, unknown> = {};
+    if (rows) for (const r of rows) if (Object.hasOwn(DEFAULTS, r.key)) raw[r.key] = r.value;
+    // Nunca confia no que está gravado: valores inválidos viram o padrão
+    return { settings: sanitizeSettings(raw, DEFAULTS), ready: rows !== undefined };
   }, [rows]);
 }
 
@@ -128,7 +130,7 @@ export const markKey = (b: number, c: number, v: number) => `${b}:${c}:${v}`;
 
 export function useChapterMarks(book: number, chapter: number): Map<number, MarkRow> {
   const rows = useLiveQuery(() => db.marks.where('[book+chapter]').equals([book, chapter]).toArray(), [book, chapter]);
-  return useMemo(() => new Map((rows ?? []).map((r) => [r.verse, r])), [rows]);
+  return useMemo(() => new Map((rows ?? []).filter(isValidMark).map((r) => [r.verse, r])), [rows]);
 }
 
 export async function patchMark(book: number, chapter: number, verse: number, patch: Partial<Pick<MarkRow, 'fav' | 'color' | 'note'>>) {
@@ -157,24 +159,36 @@ export async function exportBackup(): Promise<BackupFile> {
   return { app: 'lampada', version: 1, exportedAt: new Date().toISOString(), progress, log, marks, kv };
 }
 
+/** Confere só o formato geral e os tamanhos. Linhas individuais inválidas são ignoradas na importação. */
 export function validateBackup(x: unknown): x is BackupFile {
   const b = x as BackupFile;
-  return !!b && b.app === 'lampada' && b.version === 1 &&
+  return !!b && typeof b === 'object' && b.app === 'lampada' && b.version === 1 &&
     Array.isArray(b.progress) && Array.isArray(b.log) && Array.isArray(b.marks) && Array.isArray(b.kv) &&
-    b.progress.every((r) => valid(r?.id) && typeof r.date === 'string') &&
-    b.log.every((r) => typeof r?.key === 'string' && typeof r.date === 'string' && valid(r.chapter)) &&
-    b.marks.every((r) => typeof r?.key === 'string' && Number.isInteger(r.book) && Number.isInteger(r.chapter) && Number.isInteger(r.verse)) &&
-    b.kv.every((r) => typeof r?.key === 'string');
+    b.progress.length <= TOTAL_CHAPTERS * 2 && b.log.length <= 300_000 && b.marks.length <= 100_000 && b.kv.length <= 200;
 }
 
-export async function importBackup(b: BackupFile) {
+/** Importa só o que é válido. Devolve quantos itens foram ignorados. */
+export async function importBackup(b: BackupFile): Promise<{ skipped: number }> {
+  const progress: ProgressRow[] = b.progress
+    .filter((r) => r && valid(r.id) && isValidDateStr(r.date))
+    .map((r) => ({ id: r.id, readAt: typeof r.readAt === 'number' && Number.isFinite(r.readAt) ? r.readAt : 0, date: r.date }));
+  const log: LogRow[] = b.log
+    .filter((r) => r && isValidDateStr(r.date) && valid(r.chapter))
+    .map((r) => ({ key: `${r.date}:${r.chapter}`, date: r.date, chapter: r.chapter }));
+  const marks: MarkRow[] = b.marks.filter(isValidMark).map(sanitizeMark);
+  const rawKv: Record<string, unknown> = {};
+  for (const r of b.kv) if (r && typeof r.key === 'string' && Object.hasOwn(DEFAULTS, r.key)) rawKv[r.key] = r.value;
+  const clean = sanitizeSettings(rawKv, DEFAULTS);
+  const kv: KV[] = Object.keys(rawKv).map((key) => ({ key, value: clean[key as keyof Settings] }));
+
   await db.transaction('rw', db.progress, db.log, db.marks, db.kv, async () => {
     await Promise.all([db.progress.clear(), db.log.clear(), db.marks.clear(), db.kv.clear()]);
-    await db.progress.bulkPut(b.progress);
-    await db.log.bulkPut(b.log);
-    await db.marks.bulkPut(b.marks);
-    await db.kv.bulkPut(b.kv.filter((r) => Object.hasOwn(DEFAULTS, r.key)));
+    await db.progress.bulkPut(progress);
+    await db.log.bulkPut(log);
+    await db.marks.bulkPut(marks);
+    await db.kv.bulkPut(kv);
   });
+  return { skipped: b.progress.length - progress.length + (b.log.length - log.length) + (b.marks.length - marks.length) };
 }
 
 export async function resetAll() {
