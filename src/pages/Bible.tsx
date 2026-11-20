@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { BOOKS, GROUPS, bookOffset, chapterId } from '../data/books';
 import { TOPICS } from '../data/topics';
 import { bookProgress } from '../lib/stats';
 import { Confirm, PageHeader, ProgressBar, Segmented } from '../components/ui';
+import { SearchResults } from '../components/SearchResults';
 
 export function Bible() {
   const { read } = useApp();
@@ -12,7 +13,10 @@ export function Bible() {
   const [tab, setTab] = useState<'livros' | 'topicos'>(() => {
     try { return sessionStorage.getItem('bibleTab') === 'topicos' ? 'topicos' : 'livros'; } catch { return 'livros'; }
   });
-  const [q, setQ] = useState('');
+  // O texto da busca fica na URL: ao abrir um resultado e voltar, as sugestões continuam ali.
+  const [sp, setSp] = useSearchParams();
+  const q = sp.get('q') ?? '';
+  const setQ = (v: string) => setSp(v ? { q: v } : {}, { replace: true });
   const change = (v: 'livros' | 'topicos') => {
     setTab(v);
     try { sessionStorage.setItem('bibleTab', v); } catch { /* ignora */ }
@@ -23,10 +27,17 @@ export function Bible() {
       <PageHeader title="Bíblia" />
       <main className="page">
         <form className="searchbox" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav(`/buscar?q=${encodeURIComponent(q.trim())}`); }}>
-          <input type="search" placeholder="Buscar palavra ou referência (ex.: João 3:16)" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
-          <button className="btn primary" type="submit">Buscar</button>
+          <input
+            type="search" placeholder="Digite um livro, palavra ou referência (João 3:16)" value={q}
+            onChange={(e) => setQ(e.target.value)} aria-label="Buscar na Bíblia" autoComplete="off" enterKeyHint="search"
+          />
+          {q ? <button className="btn ghost" type="button" onClick={() => setQ('')} aria-label="Limpar busca">✕</button> : null}
         </form>
 
+        {q.trim() ? (
+          <SearchResults q={q} verseLimit={15} allHref={`/buscar?q=${encodeURIComponent(q.trim())}`} />
+        ) : (
+        <>
         <Segmented value={tab} onChange={change} options={[{ value: 'livros', label: 'Livros' }, { value: 'topicos', label: 'Tópicos' }]} />
 
         {tab === 'livros' ? (
@@ -65,6 +76,8 @@ export function Bible() {
               ))}
             </div>
           </section>
+        )}
+        </>
         )}
       </main>
     </>

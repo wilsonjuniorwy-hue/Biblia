@@ -142,3 +142,40 @@ export function parseReference(input: string): { book: number; chapter: number; 
   }
   return { book, chapter };
 }
+
+export interface BookSuggestions { matches: Book[]; chapter?: number; verse?: number }
+
+/**
+ * Autocompletar de livros: o que foi digitado vira lista ("cor" → 1 e 2 Coríntios).
+ * Ordem: nome/abreviação exatos, prefixo do nome, início de uma palavra do nome, apelidos.
+ * Um número no fim ("joão 3", "1 co 13:4") vem junto para abrir direto no capítulo.
+ */
+export function matchBooks(input: string): BookSuggestions {
+  const raw = input.toLowerCase().trim();
+  if (!raw) return { matches: [] };
+  const m = raw.match(/^(.*?)[\s.]*(\d+)?(?:\s*[:.,]\s*(\d+))?\s*$/u);
+  let bookPart = m?.[1]?.trim() ?? '';
+  let chapter = m?.[2] ? Number(m[2]) : undefined;
+  const verse = m?.[3] ? Number(m[3]) : undefined;
+  if (!bookPart) { bookPart = raw; chapter = undefined; } // só dígitos: "1" lista 1 Samuel, 1 Reis…
+  const roman = bookPart.replace(/^(iii|ii|i)(?=\s)\s*/u, (_, r: string) => `${r.length} `);
+  const exact = roman.replace(/[\s.]/g, '');
+  if (!exact) return { matches: [] };
+  const plain = normalize(exact);
+  const flat = (x: string) => normalize(x).replace(/\s/g, '');
+
+  const scored: [number, Book][] = [];
+  for (const b of BOOKS) {
+    const nf = flat(b.name);
+    const af = flat(b.abbr);
+    let tier = 9;
+    if (b.name.toLowerCase().replace(/\s/g, '') === exact || b.abbr.toLowerCase() === exact) tier = 0;
+    else if (nf === plain || af === plain) tier = 1;
+    else if (nf.startsWith(plain) || af.startsWith(plain)) tier = 2;
+    else if (normalize(b.name).split(' ').slice(1).some((w) => w.startsWith(plain))) tier = 3;
+    else if (Object.entries(ALIASES).some(([k, ab]) => ab === b.abbr && k.startsWith(plain))) tier = 4;
+    if (tier < 9) scored.push([tier, b]);
+  }
+  scored.sort((a, b) => a[0] - b[0] || a[1].id - b[1].id);
+  return { matches: scored.map(([, b]) => b), chapter, verse };
+}

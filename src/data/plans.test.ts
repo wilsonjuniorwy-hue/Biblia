@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TOTAL_CHAPTERS, chapterId, fromChapterId, parseReference, toSegments, segmentLabel } from './books';
+import { TOTAL_CHAPTERS, chapterId, fromChapterId, matchBooks, parseReference, toSegments, segmentLabel } from './books';
 import { CHRONOLOGICAL, DURATIONS, SEQUENTIAL, planChapters, planStatus, rebalance, streamsFor, type PlanConfig, type PlanType } from './plans';
 
 const TYPES: PlanType[] = ['sequencial', 'cronologico', 'misto'];
@@ -40,6 +40,28 @@ describe('estrutura', () => {
     expect(parseReference('Salmo 23')?.book).toBe(18);
     expect(parseReference('o amor de deus 3')).toBeNull();
     expect(parseReference('Isaías 41:10')?.book).toBe(22);
+  });
+  it('autocompletar de livros', () => {
+    const names = (q: string) => matchBooks(q).matches.map((b) => b.name);
+    expect(names('cor')).toEqual(['1 Coríntios', '2 Coríntios']);
+    expect(names('mat')).toEqual(['Mateus']);
+    expect(names('jo')[0]).toBe('João');           // abreviação exata primeiro
+    expect(names('jo')).toContain('Jó');
+    expect(names('jo')).toContain('Josué');
+    expect(names('sal')).toEqual(['Salmos']);
+    expect(names('1 co')).toEqual(['1 Coríntios']);
+    expect(names('II co')).toEqual(['2 Coríntios']);
+    expect(names('1')).toEqual(['1 Samuel', '1 Reis', '1 Crônicas', '1 Coríntios', '1 Tessalonicenses', '1 Timóteo', '1 Pedro', '1 João']);
+    expect(names('cant')).toEqual(['Cantares']);
+    expect(names('apoc')).toEqual(['Apocalipse']);
+    expect(names('xyz')).toEqual([]);
+    expect(names('')).toEqual([]);
+    const j = matchBooks('joão 3:16');
+    expect(j.matches[0].name).toBe('João');
+    expect(j.chapter).toBe(3);
+    expect(j.verse).toBe(16);
+    expect(matchBooks('1 co 13').chapter).toBe(13);
+    expect(matchBooks('1 co 13').matches[0].name).toBe('1 Coríntios');
   });
   it('agrupa segmentos', () => {
     const ids = [chapterId(0, 1), chapterId(0, 2), chapterId(0, 3), chapterId(1, 1)];
