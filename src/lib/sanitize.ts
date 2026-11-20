@@ -66,5 +66,15 @@ export function sanitizeSettings(raw: Record<string, unknown>, defaults: Setting
   if (isInt(raw.completedReadings) && raw.completedReadings >= 0) s.completedReadings = Math.min(raw.completedReadings, 10000);
   s.lastBackupAt = typeof raw.lastBackupAt === 'number' && Number.isFinite(raw.lastBackupAt) ? raw.lastBackupAt : null;
   if (typeof raw.startedAt === 'number' && Number.isFinite(raw.startedAt)) s.startedAt = raw.startedAt;
+  const oneOf = <T extends string>(v: unknown, list: readonly T[], d: T): T => (typeof v === 'string' && (list as readonly string[]).includes(v) ? (v as T) : d);
+  s.readerFont = oneOf(raw.readerFont, ['serif', 'sans'], defaults.readerFont);
+  s.lineHeight = oneOf(raw.lineHeight, ['compact', 'normal', 'wide'], defaults.lineHeight);
+  s.textWidth = oneOf(raw.textWidth, ['narrow', 'normal', 'wide'], defaults.textWidth);
+  s.startArea = oneOf(raw.startArea, ['ask', 'igreja', 'estudos'], defaults.startArea);
+  s.lastArea = raw.lastArea === 'igreja' || raw.lastArea === 'estudos' ? raw.lastArea : null;
+  if (typeof raw.compare === 'boolean') s.compare = raw.compare;
+  if (typeof raw.onboarded === 'boolean') s.onboarded = raw.onboarded;
+  if (typeof raw.ttsRate === 'number' && Number.isFinite(raw.ttsRate)) s.ttsRate = Math.min(1.6, Math.max(0.6, raw.ttsRate));
+  if (isInt(raw.weeklyGoal)) s.weeklyGoal = Math.min(7, Math.max(1, raw.weeklyGoal));
   return s;
 }

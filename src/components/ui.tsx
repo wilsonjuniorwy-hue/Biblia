@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
+import { Icon, type IconName } from './icons';
 
 export function PageHeader({ title, sub, back, right }: { title: string; sub?: string; back?: boolean | string; right?: ReactNode }) {
   const nav = useNavigate();
@@ -23,17 +24,17 @@ export function PageHeader({ title, sub, back, right }: { title: string; sub?: s
 export type Area = 'igreja' | 'estudos';
 
 const STUDY_TABS: [string, string, string][] = [
-  ['/estudos', 'Hoje', '☀︎'],
-  ['/biblia', 'Bíblia', '📖'],
-  ['/plano', 'Plano', '🗓'],
-  ['/progresso', 'Progresso', '📊'],
-  ['/mais', 'Mais', '☰'],
+  ['/estudos', 'Hoje', 'sun'],
+  ['/biblia', 'Bíblia', 'book'],
+  ['/plano', 'Plano', 'calendar'],
+  ['/progresso', 'Progresso', 'chart'],
+  ['/mais', 'Mais', 'menu'],
 ];
 const CHURCH_TABS: [string, string, string][] = [
-  ['/igreja', 'Igreja', '⛪'],
-  ['/biblia', 'Bíblia', '📖'],
-  ['/salvos', 'Meu conteúdo', '❤'],
-  ['/', 'Início', '⌂'],
+  ['/igreja', 'Igreja', 'church'],
+  ['/biblia', 'Bíblia', 'book'],
+  ['/salvos', 'Meu conteúdo', 'heart'],
+  ['/', 'Início', 'home'],
 ];
 
 export function TabBar({ area }: { area: Area }) {
@@ -51,7 +52,7 @@ export function TabBar({ area }: { area: Area }) {
     <nav className="tabbar" aria-label="Navegação principal">
       {items.map(([to, label, icon]) => (
         <NavLink key={to} to={to} end className={isActive(to) ? 'tab active' : 'tab'}>
-          <span className="tab-icon" aria-hidden>{icon}</span>
+          <Icon name={icon as IconName} className="tab-icon" />
           <span>{label}</span>
         </NavLink>
       ))}
@@ -168,6 +169,15 @@ export function Empty({ icon, title, text, children }: { icon: string; title: st
       <h2>{title}</h2>
       {text ? <p className="muted">{text}</p> : null}
       {children}
+    </div>
+  );
+}
+
+/** Placeholder de carregamento (linhas cinzas que pulsam). */
+export function Skeleton({ lines = 6 }: { lines?: number }) {
+  return (
+    <div className="skeleton" role="status" aria-label="Carregando">
+      {Array.from({ length: lines }, (_, i) => <span key={i} className="sk-line" style={{ width: `${96 - ((i * 13) % 38)}%` }} />)}
     </div>
   );
 }

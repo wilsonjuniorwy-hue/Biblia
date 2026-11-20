@@ -8,7 +8,8 @@ import { loadBook, translationById } from '../data/bible';
 import { setSetting } from '../db/db';
 import { dayOfYear, formatDate } from '../lib/date';
 import { nextUnreadAfter, overall } from '../lib/stats';
-import { shareText, shareVerseImage } from '../lib/share';
+import { shareText } from '../lib/share';
+import { ShareImageSheet } from '../components/ShareImageSheet';
 import { PageHeader, Ring } from '../components/ui';
 
 export default function Home() {
@@ -170,6 +171,7 @@ function VerseOfDay({ toast }: { toast: (m: string) => void }) {
   }, [tr, ref.book, ref.chapter, ref.from, ref.to]);
 
   const label = `${refLabel(ref)} (${translationById(tr).short})`;
+  const [cardOpen, setCardOpen] = useState(false);
   return (
     <section className="card verse-card">
       <small className="eyebrow">Versículo do dia</small>
@@ -179,10 +181,11 @@ function VerseOfDay({ toast }: { toast: (m: string) => void }) {
         {text ? (
           <span className="row gap">
             <button className="btn ghost small" onClick={async () => { const r = await shareText(`“${text}”\n— ${label}`); if (r === 'copied') toast('Copiado!'); if (r === 'failed') toast('Não foi possível compartilhar'); }}>Compartilhar</button>
-            <button className="btn ghost small" onClick={async () => { const r = await shareVerseImage(text, label); if (r === 'saved') toast('Imagem salva'); if (r === 'failed') toast('Não foi possível gerar a imagem'); }}>Imagem</button>
+            <button className="btn ghost small" onClick={() => setCardOpen(true)}>Imagem</button>
           </span>
         ) : null}
       </div>
+      <ShareImageSheet open={cardOpen} onClose={() => setCardOpen(false)} spec={{ kind: 'verse', text: text ?? '', ref: label }} />
     </section>
   );
 }

@@ -47,6 +47,12 @@ describe('configurações', () => {
     expect(s).toMatchObject({ translation: 'arc', fontSize: 22, theme: 'sepia', autoMark: true, reminderTime: '07:30', lastRead: { book: 18, chapter: 23 }, completedReadings: 2 });
     expect(s.plan?.days).toBe(365);
   });
+  it('novos ajustes: valida e limita', () => {
+    const s = S({ readerFont: 'comic', lineHeight: 'x', textWidth: 9, startArea: 'lua', lastArea: 'igreja', compare: 'sim', ttsRate: 99, weeklyGoal: 50, onboarded: true });
+    expect(s).toMatchObject({ readerFont: 'serif', lineHeight: 'normal', textWidth: 'normal', startArea: 'ask', lastArea: 'igreja', compare: false, ttsRate: 1.6, weeklyGoal: 7, onboarded: true });
+    expect(S({ weeklyGoal: 0 }).weeklyGoal).toBe(1);
+    expect(S({ ttsRate: 0.1 }).ttsRate).toBe(0.6);
+  });
   it('NaN e Infinity não passam', () => {
     expect(S({ fontSize: NaN }).fontSize).toBe(DEFAULTS.fontSize);
     expect(S({ fontSize: Infinity }).fontSize).toBe(DEFAULTS.fontSize);

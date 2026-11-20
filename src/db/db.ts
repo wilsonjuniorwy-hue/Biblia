@@ -20,6 +20,10 @@ export interface MarkRow {
 export interface KV { key: string; value: unknown }
 
 export type Theme = 'auto' | 'light' | 'dark' | 'sepia';
+export type ReaderFont = 'serif' | 'sans';
+export type LineHeight = 'compact' | 'normal' | 'wide';
+export type TextWidth = 'narrow' | 'normal' | 'wide';
+export type StartArea = 'ask' | 'igreja' | 'estudos';
 export interface Settings {
   translation: TranslationId;
   fontSize: number;
@@ -31,6 +35,18 @@ export interface Settings {
   completedReadings: number;
   lastBackupAt: number | null;
   startedAt: number;
+  readerFont: ReaderFont;
+  lineHeight: LineHeight;
+  textWidth: TextWidth;
+  /** Mostra as duas traduções, verso a verso. */
+  compare: boolean;
+  ttsRate: number;
+  /** Para onde o app abre. */
+  startArea: StartArea;
+  lastArea: 'igreja' | 'estudos' | null;
+  /** Meta de dias de leitura por semana. */
+  weeklyGoal: number;
+  onboarded: boolean;
 }
 
 export const DEFAULTS: Settings = {
@@ -44,6 +60,15 @@ export const DEFAULTS: Settings = {
   completedReadings: 0,
   lastBackupAt: null,
   startedAt: 0,
+  readerFont: 'serif',
+  lineHeight: 'normal',
+  textWidth: 'normal',
+  compare: false,
+  ttsRate: 1,
+  startArea: 'ask',
+  lastArea: null,
+  weeklyGoal: 5,
+  onboarded: false,
 };
 
 class AppDB extends Dexie {
