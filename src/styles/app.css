@@ -248,3 +248,19 @@ mark { background: var(--hl-yellow); color: inherit; border-radius: 3px; padding
 .suggest-book { flex-direction: row !important; justify-content: space-between; align-items: baseline !important; gap: 10px; }
 .suggest-book strong { font-family: var(--serif); font-size: 17px; }
 .searchbox input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+
+/* ---------- Celular ---------- */
+html { touch-action: manipulation; }
+@media (display-mode: standalone) { body { overscroll-behavior-y: none; } }
+.reader-title { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.rt-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt-chap { flex: none; }
+.install-card { width: calc(100% - 32px); max-width: 688px; margin: 14px auto 0; padding: 14px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.install-text { display: flex; flex-direction: column; gap: 2px; }
+.install-text span { color: var(--muted); font-size: 14px; }
+.install-text b { color: var(--text); }
+/* Telas estreitas: os controles do leitor descem para uma segunda linha em vez de cortar o nome do livro */
+.reader-top { flex-wrap: wrap; }
+.reader-title { flex: 1 1 100px; min-width: 100px; }
+.reader-top .tr-switch { margin-left: auto; }
+.font-btns { display: flex; gap: 6px; }

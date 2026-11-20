@@ -8,6 +8,7 @@ import { PLAN_INFO, planStatus } from '../data/plans';
 import { nextService, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
 import { BookArt, ChurchArt, Dawn } from '../components/art';
+import { useInstall } from '../lib/install';
 
 function greeting(h: number) {
   return h < 5 ? 'Boa madrugada' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
@@ -15,6 +16,7 @@ function greeting(h: number) {
 
 export default function Welcome() {
   const { settings, read, today, streak } = useApp();
+  const inst = useInstall();
   const now = new Date();
   const nowHM = now.toTimeString().slice(0, 5);
   const next = nextService(CHURCH.schedule, today, nowHM);
@@ -85,6 +87,23 @@ export default function Welcome() {
           </div>
         </Link>
       </main>
+
+      {!inst.standalone && !inst.dismissed && (inst.canPrompt || inst.ios) ? (
+        <aside className="install-card">
+          <div className="install-text">
+            <strong>Instale no seu celular</strong>
+            {inst.canPrompt ? (
+              <span>Abre como um aplicativo, em tela cheia, e funciona sem internet.</span>
+            ) : (
+              <span>No iPhone, abra no <b>Safari</b>, toque em <b>Compartilhar</b> (o quadrado com a seta) e depois em <b>Adicionar à Tela de Início</b>.</span>
+            )}
+          </div>
+          <div className="row gap">
+            {inst.canPrompt ? <button className="btn primary small" onClick={() => void inst.install()}>Instalar</button> : null}
+            <button className="btn ghost small" onClick={inst.dismiss}>Agora não</button>
+          </div>
+        </aside>
+      ) : null}
 
       <footer className="welcome-foot">
         {plan && st && !st.finished ? <span>{PLAN_INFO[plan.type].name} · {stats.read}/{TOTAL_CHAPTERS} capítulos</span> : <span>Funciona offline · seus dados ficam no seu aparelho</span>}

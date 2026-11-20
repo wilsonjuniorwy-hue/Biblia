@@ -114,7 +114,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
       <header className="reader-top">
         <button className="icon-btn" aria-label="Voltar ao livro" onClick={() => (location.key !== 'default' ? nav(-1) : nav(`/biblia/${book}`))}>‹</button>
         <Link to={`/biblia/${book}`} className="reader-title">
-          {bookInfo.name} <strong>{chapter}</strong>
+          <span className="rt-name">{bookInfo.name}</span> <strong className="rt-chap">{chapter}</strong>
         </Link>
         <div className="tr-switch" role="group" aria-label="Tradução">
           {TRANSLATIONS.map((t) => (
@@ -123,8 +123,10 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
             </button>
           ))}
         </div>
-        <button className="icon-btn" aria-label="Diminuir letra" onClick={() => void setSetting('fontSize', Math.max(14, settings.fontSize - 1))}>A−</button>
-        <button className="icon-btn" aria-label="Aumentar letra" onClick={() => void setSetting('fontSize', Math.min(32, settings.fontSize + 1))}>A+</button>
+        <div className="font-btns">
+          <button className="icon-btn" aria-label="Diminuir letra" onClick={() => void setSetting('fontSize', Math.max(14, settings.fontSize - 1))}>A−</button>
+          <button className="icon-btn" aria-label="Aumentar letra" onClick={() => void setSetting('fontSize', Math.min(32, settings.fontSize + 1))}>A+</button>
+        </div>
       </header>
 
       <article className="verses" style={{ fontSize: settings.fontSize }}>

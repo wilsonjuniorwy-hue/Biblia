@@ -4,9 +4,8 @@ import { useApp } from '../app/AppContext';
 import { TRANSLATIONS, downloadAll } from '../data/bible';
 import { exportBackup, importBackup, resetAll, setSetting, validateBackup, type Theme } from '../db/db';
 import { toDateStr } from '../lib/date';
+import { useInstall } from '../lib/install';
 import { Confirm, PageHeader, Segmented } from '../components/ui';
-
-interface InstallEvent extends Event { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }
 
 export default function More() {
   const { settings, toast } = useApp();
@@ -14,18 +13,13 @@ export default function More() {
   const [dlError, setDlError] = useState(false);
   const [dlg, setDlg] = useState<null | 'reset' | { backup: Awaited<ReturnType<typeof exportBackup>> }>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [installEvt, setInstallEvt] = useState<InstallEvent | null>(null);
+  const inst = useInstall();
   const [persisted, setPersisted] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const h = (e: Event) => { e.preventDefault(); setInstallEvt(e as InstallEvent); };
-    window.addEventListener('beforeinstallprompt', h);
     navigator.storage?.persisted?.().then(setPersisted).catch(() => setPersisted(null));
-    return () => window.removeEventListener('beforeinstallprompt', h);
   }, []);
 
-  const standalone = window.matchMedia?.('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone;
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
   const doExport = async () => {
     const data = await exportBackup();
@@ -122,10 +116,10 @@ export default function More() {
             {dl ? `Baixando… ${Math.round((dl.done / dl.total) * 100)}%` : `Baixar ${TRANSLATIONS.find((t) => t.id === settings.translation)!.short} para offline`}
           </button>
           {dlError ? <p className="alert">Falha no download. Verifique a conexão e tente de novo.</p> : null}
-          {!standalone ? (
-            installEvt ? (
-              <button className="btn primary" onClick={async () => { await installEvt.prompt(); setInstallEvt(null); }}>Instalar o app</button>
-            ) : isIOS ? (
+          {!inst.standalone ? (
+            inst.canPrompt ? (
+              <button className="btn primary" onClick={() => void inst.install()}>Instalar o app</button>
+            ) : inst.ios ? (
               <p className="muted small">No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início”. Instalado, o app guarda seus dados com mais segurança.</p>
             ) : null
           ) : <p className="muted small">✓ App instalado.</p>}
