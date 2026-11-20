@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { HashRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './app/AppContext';
 import { db } from './db/db';
-import { TabBar, Toasts } from './components/ui';
+import { TabBar, Toasts, type Area } from './components/ui';
 import Home from './pages/Home';
 import Welcome from './pages/Welcome';
 import Church from './pages/Church';
@@ -18,6 +18,21 @@ import { About, Saved } from './pages/Saved';
 function Shell() {
   const { settings, ready } = useApp();
   const { pathname } = useLocation();
+
+  // Área atual (Igreja ou Estudos): define a barra de abas nas telas compartilhadas, como a Bíblia.
+  const [area, setArea] = useState<Area>(() => {
+    try { return sessionStorage.getItem('area') === 'igreja' ? 'igreja' : 'estudos'; } catch { return 'estudos'; }
+  });
+  useEffect(() => {
+    const next: Area | null = pathname.startsWith('/igreja') ? 'igreja'
+      : ['/estudos', '/plano', '/progresso', '/mais'].some((p) => pathname.startsWith(p)) ? 'estudos' : null;
+    if (next && next !== area) {
+      setArea(next);
+      try { sessionStorage.setItem('area', next); } catch { /* ignora */ }
+    } else if (next) {
+      try { sessionStorage.setItem('area', next); } catch { /* ignora */ }
+    }
+  }, [pathname, area]);
 
   // Tema
   useEffect(() => {
@@ -38,11 +53,11 @@ function Shell() {
   useEffect(() => { if (!pathname.startsWith('/ler/')) window.scrollTo(0, 0); }, [pathname]);
 
   if (!ready) return <div className="splash">📖</div>;
-  const reading = pathname.startsWith('/ler/') || pathname === '/' || pathname === '/igreja';
+  const reading = pathname.startsWith('/ler/') || pathname === '/';
   return (
     <div className="app">
       <Outlet />
-      {reading ? null : <TabBar />}
+      {reading ? null : <TabBar area={area} />}
       <Toasts />
     </div>
   );

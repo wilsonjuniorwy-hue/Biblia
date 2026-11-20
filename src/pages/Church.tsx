@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
+import { BOOKS } from '../data/books';
 import { CHURCH } from '../data/church';
 import { WEEKDAYS, nextService, upcomingEvents, whenLabel } from '../lib/church';
 import { formatDate } from '../lib/date';
@@ -7,7 +9,8 @@ import { ChurchArt } from '../components/art';
 import { PageHeader } from '../components/ui';
 
 export default function Church() {
-  const { today, toast } = useApp();
+  const { today, toast, settings } = useApp();
+  const last = settings.lastRead;
   const nowHM = new Date().toTimeString().slice(0, 5);
   const next = nextService(CHURCH.schedule, today, nowHM);
   const events = upcomingEvents(CHURCH.events, today);
@@ -26,6 +29,18 @@ export default function Church() {
           {CHURCH.image ? <img src={`${import.meta.env.BASE_URL}${CHURCH.image}`} alt={`Foto de ${CHURCH.name}`} /> : <ChurchArt className="church-art" />}
         </div>
         <p className="lead">{CHURCH.welcome}</p>
+
+        <section className="card bible-cta">
+          <div className="bible-cta-text">
+            <small className="eyebrow">Modo Bíblia</small>
+            <h2>Leia a Bíblia</h2>
+            <p className="muted">Bíblia completa, tópicos para o dia a dia e busca. Funciona offline.</p>
+          </div>
+          <div className="row gap wrap">
+            <Link to="/biblia" className="btn primary grow">📖 Abrir a Bíblia</Link>
+            {last ? <Link to={`/ler/${last.book}/${last.chapter}`} className="btn ghost grow">Continuar: {BOOKS[last.book].name} {last.chapter}</Link> : null}
+          </div>
+        </section>
 
         {next ? (
           <section className="card next">

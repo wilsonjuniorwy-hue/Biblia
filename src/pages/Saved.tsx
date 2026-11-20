@@ -19,7 +19,7 @@ export function Saved() {
 
   return (
     <>
-      <PageHeader title="Meu conteúdo" back="/mais" />
+      <PageHeader title="Meu conteúdo" back />
       <main className="page">
         <Segmented<Tab> value={tab} onChange={setTab} options={[{ value: 'fav', label: 'Favoritos' }, { value: 'color', label: 'Destaques' }, { value: 'note', label: 'Notas' }]} />
         {rows && list.length === 0 ? (

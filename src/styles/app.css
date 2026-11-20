@@ -236,3 +236,8 @@ mark { background: var(--hl-yellow); color: inherit; border-radius: 3px; padding
 .date-badge strong { font-size: 22px; } .date-badge span { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
 .pix { display: flex; flex-direction: column; gap: 4px; padding: 12px; background: var(--surface2); border-radius: 12px; }
 .pix code { font: 600 16px ui-monospace, Consolas, monospace; word-break: break-all; }
+.bible-cta { background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #2a4a8a)); color: var(--on-primary); border: 0; }
+.bible-cta .eyebrow, .bible-cta .muted { color: color-mix(in srgb, var(--on-primary) 75%, transparent); }
+.bible-cta h2 { font: 700 22px var(--serif); }
+.bible-cta .btn.primary { background: var(--accent); color: #14213d; }
+.bible-cta .btn.ghost { color: var(--on-primary); border-color: color-mix(in srgb, var(--on-primary) 40%, transparent); }
