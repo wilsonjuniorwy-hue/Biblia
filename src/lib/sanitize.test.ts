@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isValidDateStr, isValidMark, sanitizeMark, sanitizePlan, sanitizeSettings } from './sanitize';
+import { isValidDateStr, isValidEvent, isValidMark, sanitizeEvent, sanitizeMark, sanitizePlan, sanitizeSettings } from './sanitize';
 import { DEFAULTS, validateBackup, type MarkRow } from '../db/db';
 
 const S = (raw: Record<string, unknown>) => sanitizeSettings(raw, DEFAULTS);
@@ -48,10 +48,9 @@ describe('configurações', () => {
     expect(s.plan?.days).toBe(365);
   });
   it('novos ajustes: valida e limita', () => {
-    const s = S({ readerFont: 'comic', lineHeight: 'x', textWidth: 9, startArea: 'lua', lastArea: 'igreja', compare: 'sim', ttsRate: 99, weeklyGoal: 50, onboarded: true });
-    expect(s).toMatchObject({ readerFont: 'serif', lineHeight: 'normal', textWidth: 'normal', startArea: 'ask', lastArea: 'igreja', compare: false, ttsRate: 1.6, weeklyGoal: 7, onboarded: true });
+    const s = S({ readerFont: 'comic', lineHeight: 'x', textWidth: 9, startArea: 'lua', lastArea: 'igreja', compare: 'sim', weeklyGoal: 50, onboarded: true });
+    expect(s).toMatchObject({ readerFont: 'serif', lineHeight: 'normal', textWidth: 'normal', startArea: 'ask', lastArea: 'igreja', compare: false, weeklyGoal: 7, onboarded: true });
     expect(S({ weeklyGoal: 0 }).weeklyGoal).toBe(1);
-    expect(S({ ttsRate: 0.1 }).ttsRate).toBe(0.6);
   });
   it('NaN e Infinity não passam', () => {
     expect(S({ fontSize: NaN }).fontSize).toBe(DEFAULTS.fontSize);
@@ -80,5 +79,25 @@ describe('backup', () => {
   it('formato geral', () => {
     expect(validateBackup(ok)).toBe(true);
     for (const bad of [null, 'x', {}, { ...ok, app: 'outro' }, { ...ok, version: 2 }, { ...ok, marks: 'x' }, { ...ok, kv: Array(500).fill({}) }]) expect(validateBackup(bad)).toBe(false);
+  });
+});
+
+describe('eventos', () => {
+  const e = (o: Record<string, unknown> = {}) => ({ id: 'x1', title: 'Culto', date: '2026-11-22', time: '19:00', place: '', notes: '', weekly: 0, createdAt: 1, ...o });
+  it('aceita evento válido (com e sem horário)', () => {
+    expect(isValidEvent(e())).toBe(true);
+    expect(isValidEvent(e({ time: '' }))).toBe(true);
+  });
+  it('rejeita o que não é evento', () => {
+    for (const bad of [null, 'x', {}, e({ id: '' }), e({ title: '   ' }), e({ title: 5 }), e({ date: '2026-02-30' }), e({ date: 'abc' }), e({ time: '25:00' }), e({ time: '9:00' }), e({ time: 19 })]) {
+      expect(isValidEvent(bad)).toBe(false);
+    }
+  });
+  it('normaliza e limita os textos', () => {
+    const c = sanitizeEvent(e({ title: `  ${'x'.repeat(500)}  `, notes: 'n'.repeat(5000), place: 'p'.repeat(500), weekly: 7 }) as never);
+    expect(c.title.length).toBe(120);
+    expect(c.notes.length).toBe(1000);
+    expect(c.place.length).toBe(120);
+    expect(c.weekly).toBe(1);
   });
 });

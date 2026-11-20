@@ -7,7 +7,6 @@ import { patchMark, setSetting, useChapterMarks } from '../db/db';
 import { useChapter } from '../lib/useChapter';
 import { copyText, shareText } from '../lib/share';
 import { buzz } from '../lib/cards';
-import { useSpeech } from '../lib/speech';
 import { Icon } from '../components/icons';
 import { ReaderSettings, LINE_HEIGHT, TEXT_WIDTH } from '../components/ReaderSettings';
 import { ShareImageSheet, type CardSpec } from '../components/ShareImageSheet';
@@ -19,7 +18,6 @@ const COLORS: { id: string; label: string }[] = [
   { id: 'blue', label: 'Azul' },
   { id: 'pink', label: 'Rosa' },
 ];
-const RATES = [0.8, 1, 1.2, 1.5];
 
 function parseFocus(v: string | null): [number, number] | null {
   if (!v) return null;
@@ -48,7 +46,6 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
   const { data: verses, error, loading } = useChapter(tr, book, chapter, retry);
   const { data: otherVerses } = useChapter(other.id, book, chapter, retry, settings.compare);
   const marks = useChapterMarks(book, chapter);
-  const speech = useSpeech();
   const [sel, setSel] = useState<number | null>(null);
   const [noteDraft, setNoteDraft] = useState('');
   const [appearance, setAppearance] = useState(false);
@@ -142,13 +139,6 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
     }
   };
 
-  // Acompanha o versículo que está sendo lido em voz alta
-  useEffect(() => {
-    if (speech.current === null) return;
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    document.getElementById(`v${speech.current + 1}`)?.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
-  }, [speech.current]);
-
   const ref = (v: number) => `${bookInfo.name} ${chapter}:${v}`;
   const selText = sel !== null && verses ? verses[sel - 1] : '';
   const selMark = sel !== null ? marks.get(sel) : undefined;
@@ -164,22 +154,6 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
     if (isRead) await unmark([id]); else { buzz(20); await mark([id]); }
   };
 
-  const listen = () => {
-    if (!verses) return;
-    if (!speech.supported) { toast('Este navegador não tem leitura em voz alta.'); return; }
-    if (speech.state === 'idle') {
-      if (!speech.hasPtVoice) toast('Seu aparelho não tem voz em português. Usando a voz padrão.');
-      speech.speakFrom(verses, focus ? focus[0] - 1 : 0, settings.ttsRate);
-    } else if (speech.state === 'playing') speech.pause();
-    else speech.resume();
-  };
-  const nextRate = () => {
-    const i = RATES.indexOf(settings.ttsRate);
-    const r = RATES[(i + 1) % RATES.length];
-    void setSetting('ttsRate', r);
-    if (speech.state !== 'idle') speech.speakFrom(speech.texts.current, speech.current ?? 0, r);
-  };
-
   const prev = id > 0 ? fromChapterId(id - 1) : null;
   const next = id < TOTAL_CHAPTERS - 1 ? fromChapterId(id + 1) : null;
   const count = Math.max(verses?.length ?? 0, settings.compare ? otherVerses?.length ?? 0 : 0);
@@ -188,7 +162,6 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
     '--w': `${TEXT_WIDTH[settings.textWidth]}px`,
     '--rf': settings.readerFont === 'sans' ? 'var(--sans)' : 'var(--serif)',
   } as CSSProperties;
-  const playing = speech.state !== 'idle';
 
   return (
     <div className="reader" style={rootStyle} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
@@ -206,7 +179,6 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
         </div>
         <div className="font-btns">
           <button className="icon-btn" aria-label="Aparência do texto" onClick={() => setAppearance(true)}><Icon name="type" size={20} /></button>
-          <button className={`icon-btn ${playing ? 'on' : ''}`} aria-label="Ouvir o capítulo" aria-pressed={playing} onClick={listen} disabled={!verses}><Icon name="volume" size={20} /></button>
         </div>
         <div className="read-progress" aria-hidden><span ref={barRef} /></div>
       </header>
@@ -229,7 +201,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
             return (
               <p
                 key={v} id={`v${v}`}
-                className={`verse ${m?.color ? `hl-${m.color}` : ''} ${focused ? 'focus' : ''} ${sel === v ? 'selected' : ''} ${speech.current === i ? 'speaking' : ''}`}
+                className={`verse ${m?.color ? `hl-${m.color}` : ''} ${focused ? 'focus' : ''} ${sel === v ? 'selected' : ''}`}
                 role="button" tabIndex={0}
                 onClick={() => text !== undefined && openVerse(v)}
                 onKeyDown={(e) => { if (text !== undefined && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openVerse(v); } }}
@@ -260,19 +232,8 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
         </div>
       </main>
 
-      {verses && !isRead && pastQuarter && !endVisible && !playing && sel === null ? (
+      {verses && !isRead && pastQuarter && !endVisible && sel === null ? (
         <button className="mark-fab" onClick={() => void toggleRead()}><Icon name="check" size={18} /> Marcar lido</button>
-      ) : null}
-
-      {playing ? (
-        <div className="player" role="region" aria-label="Leitura em voz alta">
-          <button className="icon-btn" aria-label={speech.state === 'playing' ? 'Pausar' : 'Continuar'} onClick={listen}>
-            <Icon name={speech.state === 'playing' ? 'pause' : 'play'} size={20} />
-          </button>
-          <button className="icon-btn" aria-label="Parar" onClick={speech.stop}><Icon name="stop" size={20} /></button>
-          <span className="player-info">Versículo {(speech.current ?? 0) + 1} de {verses?.length ?? 0}</span>
-          <button className="chip" aria-label={`Velocidade ${settings.ttsRate}x. Tocar para mudar`} onClick={nextRate}>{settings.ttsRate}x</button>
-        </div>
       ) : null}
 
       <ReaderSettings open={appearance} onClose={() => setAppearance(false)} />

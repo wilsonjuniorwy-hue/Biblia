@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
-import { CHURCH } from '../data/church';
+import { useEvents } from '../db/db';
 import { loadBook, translationById } from '../data/bible';
 import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
 import { PLAN_INFO, planStatus } from '../data/plans';
-import { nextService, whenLabel } from '../lib/church';
+import { upcomingOccurrences, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
 import { BookArt, ChurchArt, Dawn } from '../components/art';
 import { useInstall } from '../lib/install';
@@ -21,7 +21,8 @@ export default function Welcome() {
   const inst = useInstall();
   const now = new Date();
   const nowHM = now.toTimeString().slice(0, 5);
-  const next = nextService(CHURCH.schedule, today, nowHM);
+  const { events } = useEvents();
+  const next = upcomingOccurrences(events, today, nowHM)[0] ?? null;
   const stats = overall(read);
   const plan = settings.plan;
   const st = plan ? planStatus(plan, read, today) : null;
@@ -72,9 +73,9 @@ export default function Welcome() {
           <ChurchArt className="door-art" />
           <div className="door-body">
             <h2>Igreja{settings.lastArea === 'igreja' ? <span className="last-badge">última vez</span> : null}</h2>
-            <p>{CHURCH.name}</p>
+            <p>Seus eventos e a Bíblia</p>
             <span className="door-meta">
-              {next ? `Próximo: ${next.item.title}, ${whenLabel(next.offset, next.date)} às ${next.item.time}` : 'Programação, avisos e contato'}
+              {next ? `Próximo: ${next.event.title}, ${whenLabel(next.offset, next.date)}${next.event.time ? ` às ${next.event.time}` : ''}` : 'Cadastre seus cultos e compromissos'}
             </span>
             <span className="door-go">Entrar →</span>
           </div>

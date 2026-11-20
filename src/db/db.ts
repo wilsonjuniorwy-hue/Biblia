@@ -5,7 +5,7 @@ import type { TranslationId } from '../data/bible';
 import type { PlanConfig } from '../data/plans';
 import { TOTAL_CHAPTERS } from '../data/books';
 import { todayStr } from '../lib/date';
-import { isValidDateStr, isValidMark, sanitizeMark, sanitizeSettings } from '../lib/sanitize';
+import { isValidDateStr, isValidEvent, isValidMark, sanitizeEvent, sanitizeMark, sanitizeSettings } from '../lib/sanitize';
 
 export interface ProgressRow { id: number; readAt: number; date: string }
 export interface LogRow { key: string; date: string; chapter: number }
@@ -18,6 +18,17 @@ export interface MarkRow {
   updatedAt: number;
 }
 export interface KV { key: string; value: unknown }
+/** Evento da agenda do próprio usuário (cultos, reuniões, compromissos da igreja). */
+export interface EventRow {
+  id: string;
+  title: string;
+  date: string;   // AAAA-MM-DD (para evento semanal, é a 1ª data: define o dia da semana)
+  time: string;   // HH:MM ou '' (dia inteiro)
+  place: string;
+  notes: string;
+  weekly: 0 | 1;  // repete toda semana
+  createdAt: number;
+}
 
 export type Theme = 'auto' | 'light' | 'dark' | 'sepia';
 export type ReaderFont = 'serif' | 'sans';
@@ -40,7 +51,6 @@ export interface Settings {
   textWidth: TextWidth;
   /** Mostra as duas traduções, verso a verso. */
   compare: boolean;
-  ttsRate: number;
   /** Para onde o app abre. */
   startArea: StartArea;
   lastArea: 'igreja' | 'estudos' | null;
@@ -64,7 +74,6 @@ export const DEFAULTS: Settings = {
   lineHeight: 'normal',
   textWidth: 'normal',
   compare: false,
-  ttsRate: 1,
   startArea: 'ask',
   lastArea: null,
   weeklyGoal: 5,
@@ -76,6 +85,7 @@ class AppDB extends Dexie {
   log!: Table<LogRow, string>;
   marks!: Table<MarkRow, string>;
   kv!: Table<KV, string>;
+  events!: Table<EventRow, string>;
   constructor() {
     super('lampada');
     this.version(1).stores({
@@ -84,6 +94,8 @@ class AppDB extends Dexie {
       marks: 'key, fav, [book+chapter]',
       kv: 'key',
     });
+    // v2: agenda de eventos (só acrescenta uma tabela; nada do que já existe muda)
+    this.version(2).stores({ events: 'id, date' });
   }
 }
 export const db = new AppDB();
@@ -177,19 +189,21 @@ export interface BackupFile {
   log: LogRow[];
   marks: MarkRow[];
   kv: KV[];
+  /** Opcional: backups antigos não têm eventos. */
+  events?: EventRow[];
 }
 
 export async function exportBackup(): Promise<BackupFile> {
-  const [progress, log, marks, kv] = await Promise.all([db.progress.toArray(), db.log.toArray(), db.marks.toArray(), db.kv.toArray()]);
-  return { app: 'lampada', version: 1, exportedAt: new Date().toISOString(), progress, log, marks, kv };
+  const [progress, log, marks, kv, events] = await Promise.all([db.progress.toArray(), db.log.toArray(), db.marks.toArray(), db.kv.toArray(), db.events.toArray()]);
+  return { app: 'lampada', version: 1, exportedAt: new Date().toISOString(), progress, log, marks, kv, events };
 }
 
 /** Confere só o formato geral e os tamanhos. Linhas individuais inválidas são ignoradas na importação. */
 export function validateBackup(x: unknown): x is BackupFile {
   const b = x as BackupFile;
   return !!b && typeof b === 'object' && b.app === 'lampada' && b.version === 1 &&
-    Array.isArray(b.progress) && Array.isArray(b.log) && Array.isArray(b.marks) && Array.isArray(b.kv) &&
-    b.progress.length <= TOTAL_CHAPTERS * 2 && b.log.length <= 300_000 && b.marks.length <= 100_000 && b.kv.length <= 200;
+    Array.isArray(b.progress) && Array.isArray(b.log) && Array.isArray(b.marks) && Array.isArray(b.kv) && (b.events === undefined || Array.isArray(b.events)) &&
+    b.progress.length <= TOTAL_CHAPTERS * 2 && b.log.length <= 300_000 && b.marks.length <= 100_000 && b.kv.length <= 200 && (b.events?.length ?? 0) <= 5_000;
 }
 
 /** Importa só o que é válido. Devolve quantos itens foram ignorados. */
@@ -201,23 +215,36 @@ export async function importBackup(b: BackupFile): Promise<{ skipped: number }> 
     .filter((r) => r && isValidDateStr(r.date) && valid(r.chapter))
     .map((r) => ({ key: `${r.date}:${r.chapter}`, date: r.date, chapter: r.chapter }));
   const marks: MarkRow[] = b.marks.filter(isValidMark).map(sanitizeMark);
+  const events: EventRow[] = (b.events ?? []).filter(isValidEvent).map(sanitizeEvent);
   const rawKv: Record<string, unknown> = {};
   for (const r of b.kv) if (r && typeof r.key === 'string' && Object.hasOwn(DEFAULTS, r.key)) rawKv[r.key] = r.value;
   const clean = sanitizeSettings(rawKv, DEFAULTS);
   const kv: KV[] = Object.keys(rawKv).map((key) => ({ key, value: clean[key as keyof Settings] }));
 
-  await db.transaction('rw', db.progress, db.log, db.marks, db.kv, async () => {
-    await Promise.all([db.progress.clear(), db.log.clear(), db.marks.clear(), db.kv.clear()]);
+  await db.transaction('rw', db.progress, db.log, db.marks, db.kv, db.events, async () => {
+    await Promise.all([db.progress.clear(), db.log.clear(), db.marks.clear(), db.kv.clear(), db.events.clear()]);
     await db.progress.bulkPut(progress);
     await db.log.bulkPut(log);
     await db.marks.bulkPut(marks);
     await db.kv.bulkPut(kv);
+    await db.events.bulkPut(events);
   });
-  return { skipped: b.progress.length - progress.length + (b.log.length - log.length) + (b.marks.length - marks.length) };
+  return { skipped: b.progress.length - progress.length + (b.log.length - log.length) + (b.marks.length - marks.length) + ((b.events?.length ?? 0) - events.length) };
 }
 
 export async function resetAll() {
-  await db.transaction('rw', db.progress, db.log, db.marks, db.kv, async () => {
-    await Promise.all([db.progress.clear(), db.log.clear(), db.marks.clear(), db.kv.clear()]);
+  await db.transaction('rw', db.progress, db.log, db.marks, db.kv, db.events, async () => {
+    await Promise.all([db.progress.clear(), db.log.clear(), db.marks.clear(), db.kv.clear(), db.events.clear()]);
   });
 }
+
+// -------------------------------------------------------------------- Eventos
+export function useEvents(): { events: EventRow[]; ready: boolean } {
+  const rows = useLiveQuery(() => db.events.toArray(), []);
+  return useMemo(() => ({ events: (rows ?? []).filter(isValidEvent), ready: rows !== undefined }), [rows]);
+}
+
+export const newEventId = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `e${Date.now()}${Math.random().toString(36).slice(2, 8)}`);
+
+export async function saveEvent(e: EventRow) { await db.events.put(sanitizeEvent(e)); }
+export async function deleteEvent(id: string) { await db.events.delete(id); }

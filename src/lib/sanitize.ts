@@ -1,7 +1,7 @@
 import { TOTAL_CHAPTERS, VERSE_COUNTS, isValidChapter } from '../data/books';
 import { PLAN_INFO, type PlanConfig, type PlanType } from '../data/plans';
 import type { TranslationId } from '../data/bible';
-import type { MarkRow, Settings, Theme } from '../db/db';
+import type { EventRow, MarkRow, Settings, Theme } from '../db/db';
 
 /**
  * Tudo que vem do armazenamento ou de um arquivo de backup é tratado como NÃO CONFIÁVEL:
@@ -33,6 +33,30 @@ export function sanitizePlan(x: unknown): PlanConfig | null {
     ? [...new Set(p.excluded.filter((n): n is number => isInt(n) && n >= 0 && n < TOTAL_CHAPTERS))]
     : [];
   return { type: p.type as PlanType, days: p.days, startDate: p.startDate, excluded };
+}
+
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** Evento mínimo válido: título, data real e (se houver) horário HH:MM. */
+export function isValidEvent(r: unknown): r is EventRow {
+  const e = r as EventRow;
+  return !!e && typeof e === 'object' && typeof e.id === 'string' && e.id.length > 0 && e.id.length <= 80
+    && typeof e.title === 'string' && e.title.trim().length > 0
+    && isValidDateStr(e.date) && (e.time === '' || (typeof e.time === 'string' && TIME_RE.test(e.time)));
+}
+
+export function sanitizeEvent(e: EventRow): EventRow {
+  const cut = (v: unknown, n: number) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
+  return {
+    id: e.id.slice(0, 80),
+    title: cut(e.title, 120),
+    date: e.date,
+    time: e.time,
+    place: cut(e.place, 120),
+    notes: cut(e.notes, 1000),
+    weekly: e.weekly ? 1 : 0,
+    createdAt: typeof e.createdAt === 'number' && Number.isFinite(e.createdAt) ? e.createdAt : 0,
+  };
 }
 
 export function isValidMark(r: unknown): r is MarkRow {
@@ -74,7 +98,6 @@ export function sanitizeSettings(raw: Record<string, unknown>, defaults: Setting
   s.lastArea = raw.lastArea === 'igreja' || raw.lastArea === 'estudos' ? raw.lastArea : null;
   if (typeof raw.compare === 'boolean') s.compare = raw.compare;
   if (typeof raw.onboarded === 'boolean') s.onboarded = raw.onboarded;
-  if (typeof raw.ttsRate === 'number' && Number.isFinite(raw.ttsRate)) s.ttsRate = Math.min(1.6, Math.max(0.6, raw.ttsRate));
   if (isInt(raw.weeklyGoal)) s.weeklyGoal = Math.min(7, Math.max(1, raw.weeklyGoal));
   return s;
 }
