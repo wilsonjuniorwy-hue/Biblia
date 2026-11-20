@@ -1,12 +1,8 @@
 import type { ChurchEvent, ServiceItem } from '../data/church';
-import { addDays } from './date';
+import { addDays, weekdayOf } from './date';
+export { weekdayOf };
 
 export const WEEKDAYS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-
-export function weekdayOf(date: string): number {
-  const [y, m, d] = date.split('-').map(Number);
-  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-}
 
 export interface NextService { date: string; offset: number; item: ServiceItem }
 

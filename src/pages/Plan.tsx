@@ -5,6 +5,7 @@ import { chapterId, segmentLabel } from '../data/books';
 import { DURATIONS, PLAN_INFO, planDays, planStatus, rebalance, suggestedPerDay, type PlanConfig, type PlanType } from '../data/plans';
 import { setSetting } from '../db/db';
 import { addDays, formatDate } from '../lib/date';
+import { estimateMinutes } from '../lib/stats';
 import { Confirm, PageHeader, ProgressBar } from '../components/ui';
 
 export default function PlanPage() {
@@ -137,7 +138,7 @@ function ActivePlan({ plan, read, today }: { plan: PlanConfig; read: Set<number>
             <li key={d.index} className={`day ${done ? 'done' : ''} ${isToday ? 'today' : ''} ${late ? 'late' : ''}`}>
               <div className="day-head">
                 <strong>Dia {d.index + 1}</strong>
-                <span className="muted small">{formatDate(d.date, { weekday: 'short', day: '2-digit', month: 'short' })}{isToday ? ' · hoje' : ''}</span>
+                <span className="muted small">{formatDate(d.date, { weekday: 'short', day: '2-digit', month: 'short' })}{isToday ? ' · hoje' : ''}{d.chapters.length ? ` · ~${estimateMinutes(d.chapters)} min` : ''}</span>
                 {done ? <span className="badge ok">✓</span> : late ? <span className="badge warn">pendente</span> : null}
               </div>
               {d.chapters.length === 0 ? <span className="muted small">Dia livre</span> : (

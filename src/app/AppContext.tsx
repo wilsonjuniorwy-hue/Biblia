@@ -2,7 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import Dexie from 'dexie';
 import { db, markRead, unmarkRead, useProgress, useReadDates, useSettings, type Settings } from '../db/db';
 import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
-import { bookProgress, streaks } from '../lib/stats';
+import { bookProgress, streaks, weekProgress } from '../lib/stats';
+import { planStatus } from '../data/plans';
 import { todayStr } from '../lib/date';
 
 interface Ctx {
@@ -19,6 +20,8 @@ interface Ctx {
   unmark: (ids: number[]) => Promise<void>;
   toast: (msg: string) => void;
   toasts: { id: number; msg: string }[];
+  /** Sobe a cada comemoração (dia concluído, meta da semana); a tela dispara os confetes. */
+  confetti: number;
 }
 
 const AppCtx = createContext<Ctx | null>(null);
@@ -48,9 +51,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const today = useToday();
   const [toasts, setToasts] = useState<{ id: number; msg: string }[]>([]);
   const [dbError, setDbError] = useState(false);
+  const [confetti, setConfetti] = useState(0);
   const nextId = useRef(1);
   const readRef = useRef(read);
   readRef.current = read;
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+  const datesRef = useRef<string[]>([]);
+  datesRef.current = readDates;
 
   const toast = useCallback((msg: string) => {
     const id = nextId.current++;
@@ -91,6 +99,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!bookProgress(before, b).done && bookProgress(after, b).done) toast(`🎉 Você concluiu ${BOOKS[b].name}!`);
     }
     if (before.size < TOTAL_CHAPTERS && after.size >= TOTAL_CHAPTERS) toast('🏆 Bíblia completa! Veja em Progresso.');
+
+    // Comemora: leitura do dia do plano concluída e meta da semana batida
+    let party = false;
+    const t = todayStr();
+    const plan = settingsRef.current.plan;
+    if (plan) {
+      const b = planStatus(plan, before, t);
+      const a = planStatus(plan, after, t);
+      if (b.today && b.today.chapters.length > 0 && !b.todayDone && a.todayDone) { toast('✅ Leitura de hoje concluída!'); party = true; }
+    }
+    const goal = settingsRef.current.weeklyGoal;
+    const wb = weekProgress(datesRef.current, t).days;
+    const wa = weekProgress([...datesRef.current, t], t).days;
+    if (wb < goal && wa >= goal) { toast(`🌟 Meta da semana: ${goal} ${goal === 1 ? 'dia' : 'dias'} de leitura!`); party = true; }
+    if (party) setConfetti((n) => n + 1);
   }, [toast]);
 
   const unmark = useCallback(async (ids: number[]) => { await unmarkRead(ids); }, []);
@@ -99,7 +122,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const readToday = useMemo(() => readDates.includes(today), [readDates, today]);
 
   const value: Ctx = {
-    settings, ready: sReady && pReady, dbError, read, readDates, today, streak, readToday, mark, unmark, toast, toasts,
+    settings, ready: sReady && pReady, dbError, read, readDates, today, streak, readToday, mark, unmark, toast, toasts, confetti,
   };
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

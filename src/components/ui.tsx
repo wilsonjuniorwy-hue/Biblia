@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { Icon, type IconName } from './icons';
@@ -178,6 +178,31 @@ export function Skeleton({ lines = 6 }: { lines?: number }) {
   return (
     <div className="skeleton" role="status" aria-label="Carregando">
       {Array.from({ length: lines }, (_, i) => <span key={i} className="sk-line" style={{ width: `${96 - ((i * 13) % 38)}%` }} />)}
+    </div>
+  );
+}
+
+const CONFETTI_COLORS = ['#fca311', '#d98200', '#52c38d', '#4d8be0', '#e0627a', '#f5ecd7'];
+
+/** Chuva rápida de confetes quando `trigger` muda. Não aparece para quem prefere menos movimento. */
+export function Confetti({ trigger }: { trigger: number }) {
+  const [show, setShow] = useState(0);
+  useEffect(() => {
+    if (!trigger || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    setShow(trigger);
+    const t = setTimeout(() => setShow(0), 2400);
+    return () => clearTimeout(t);
+  }, [trigger]);
+  if (!show) return null;
+  return (
+    <div className="confetti" aria-hidden>
+      {Array.from({ length: 36 }, (_, i) => (
+        <span key={i} style={{
+          left: `${(i * 97) % 100}%`, background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+          animationDelay: `${(i % 9) * 0.07}s`, animationDuration: `${1.5 + (i % 5) * 0.2}s`,
+          transform: `rotate(${(i * 41) % 360}deg)`, width: `${6 + (i % 3) * 3}px`, height: `${10 + (i % 4) * 3}px`,
+        }} />
+      ))}
     </div>
   );
 }

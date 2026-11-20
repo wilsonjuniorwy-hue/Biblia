@@ -9,6 +9,8 @@ import { nextService, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
 import { BookArt, ChurchArt, Dawn } from '../components/art';
 import { useInstall } from '../lib/install';
+import { Onboarding } from '../components/Onboarding';
+import { estimateMinutes } from '../lib/stats';
 
 function greeting(h: number) {
   return h < 5 ? 'Boa madrugada' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
@@ -39,7 +41,7 @@ export default function Welcome() {
       const ids = st.today.chapters;
       if (ids.length) {
         const f = fromChapterId(ids[0]);
-        parts.push(`${st.todayDone ? '✓ ' : ''}Hoje: ${BOOKS[f.book].abbr} ${f.chapter}${ids.length > 1 ? ` +${ids.length - 1}` : ''}`);
+        parts.push(`${st.todayDone ? '✓ ' : ''}Hoje: ${BOOKS[f.book].abbr} ${f.chapter}${ids.length > 1 ? ` +${ids.length - 1}` : ''} · ~${estimateMinutes(ids)} min`);
       }
     }
     parts.push(`${Math.floor(stats.pct * 100)}% lido`);
@@ -49,6 +51,7 @@ export default function Welcome() {
 
   return (
     <div className="welcome">
+      {!settings.onboarded ? <Onboarding /> : null}
       <header className="welcome-hero">
         <Dawn className="hero-art" />
         <div className="hero-fade" />
@@ -68,7 +71,7 @@ export default function Welcome() {
         <Link to="/igreja" className="door">
           <ChurchArt className="door-art" />
           <div className="door-body">
-            <h2>Igreja</h2>
+            <h2>Igreja{settings.lastArea === 'igreja' ? <span className="last-badge">última vez</span> : null}</h2>
             <p>{CHURCH.name}</p>
             <span className="door-meta">
               {next ? `Próximo: ${next.item.title}, ${whenLabel(next.offset, next.date)} às ${next.item.time}` : 'Programação, avisos e contato'}
@@ -80,7 +83,7 @@ export default function Welcome() {
         <Link to="/estudos" className="door">
           <BookArt className="door-art" />
           <div className="door-body">
-            <h2>Estudos bíblicos</h2>
+            <h2>Estudos bíblicos{settings.lastArea === 'estudos' ? <span className="last-badge">última vez</span> : null}</h2>
             <p>Bíblia completa, planos e progresso</p>
             <span className="door-meta">{studyMeta}</span>
             <span className="door-go">Entrar →</span>

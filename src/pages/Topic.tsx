@@ -6,7 +6,7 @@ import { BOOKS } from '../data/books';
 import { refLabel, topicById, type VerseRef } from '../data/topics';
 import { setSetting } from '../db/db';
 import { copyText, shareText } from '../lib/share';
-import { PageHeader } from '../components/ui';
+import { PageHeader, Skeleton } from '../components/ui';
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -46,7 +46,7 @@ function VerseItem({ r, tr, toast }: { r: VerseRef; tr: 'tb' | 'arc'; toast: (m:
   const label = `${refLabel(r)} (${translationById(tr).short})`;
   return (
     <section className="card verse-card">
-      {text === null ? <p className="muted">Carregando…</p> : text === '' ? <p className="muted">Texto indisponível no momento.</p> : <blockquote>“{text}”</blockquote>}
+      {text === null ? <Skeleton lines={3} /> : text === '' ? <p className="muted">Texto indisponível no momento.</p> : <blockquote>“{text}”</blockquote>}
       <div className="row between center-y">
         <Link className="verse-ref" to={`/ler/${r.book}/${r.chapter}?v=${r.from}${r.to > r.from ? `-${r.to}` : ''}`}>
           {BOOKS[r.book].name} {r.chapter}:{r.from}{r.to > r.from ? `-${r.to}` : ''} · ler no capítulo

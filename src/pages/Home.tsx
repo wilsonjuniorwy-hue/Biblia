@@ -7,10 +7,11 @@ import { verseOfTheDay, refLabel } from '../data/topics';
 import { loadBook, translationById } from '../data/bible';
 import { setSetting } from '../db/db';
 import { dayOfYear, formatDate } from '../lib/date';
-import { nextUnreadAfter, overall } from '../lib/stats';
+import { estimateMinutes, nextUnreadAfter, overall } from '../lib/stats';
+import { WeekGoal } from '../components/WeekGoal';
 import { shareText } from '../lib/share';
 import { ShareImageSheet } from '../components/ShareImageSheet';
-import { PageHeader, Ring } from '../components/ui';
+import { PageHeader, Ring, Skeleton } from '../components/ui';
 
 export default function Home() {
   const { settings, read, today, streak, readToday, mark, toast } = useApp();
@@ -68,7 +69,7 @@ export default function Home() {
           <section className="card hero">
             <div className="row between">
               <div>
-                <small className="eyebrow">Dia {st.todayIndex + 1} de {plan.days} · {PLAN_INFO[plan.type].name}</small>
+                <small className="eyebrow">Dia {st.todayIndex + 1} de {plan.days} · {PLAN_INFO[plan.type].name}{st.today && st.today.chapters.length > 0 ? ` · ~${estimateMinutes(st.today.chapters)} min` : ''}</small>
                 <h2>{st.today && st.today.chapters.length > 0 ? 'Leitura de hoje' : 'Hoje é dia livre'}</h2>
               </div>
               {st.todayDone && st.today!.chapters.length > 0 ? <span className="badge ok">✓ Feito</span> : null}
@@ -146,6 +147,8 @@ export default function Home() {
           </div>
         </Link>
 
+        <WeekGoal />
+
         <VerseOfDay toast={toast} />
 
         {settings.completedReadings > 0 ? <p className="muted center small">📚 Bíblias completas lidas: {settings.completedReadings}</p> : null}
@@ -175,7 +178,7 @@ function VerseOfDay({ toast }: { toast: (m: string) => void }) {
   return (
     <section className="card verse-card">
       <small className="eyebrow">Versículo do dia</small>
-      {text === null ? <p className="muted">Carregando…</p> : text === '' ? <p className="muted">Texto indisponível no momento.</p> : <blockquote>“{text}”</blockquote>}
+      {text === null ? <Skeleton lines={3} /> : text === '' ? <p className="muted">Texto indisponível no momento.</p> : <blockquote>“{text}”</blockquote>}
       <div className="row between center-y">
         <Link to={`/ler/${ref.book}/${ref.chapter}?v=${ref.from}${ref.to > ref.from ? `-${ref.to}` : ''}`} className="verse-ref">{label}</Link>
         {text ? (

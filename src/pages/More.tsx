@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { TRANSLATIONS, downloadAll } from '../data/bible';
-import { exportBackup, importBackup, resetAll, setSetting, validateBackup, type Theme } from '../db/db';
+import { exportBackup, importBackup, resetAll, setSetting, validateBackup, type StartArea, type Theme } from '../db/db';
 import { toDateStr } from '../lib/date';
 import { useInstall } from '../lib/install';
 import { Confirm, PageHeader, Segmented } from '../components/ui';
 
 export default function More() {
   const { settings, toast } = useApp();
+  const nav = useNavigate();
   const [dl, setDl] = useState<null | { done: number; total: number }>(null);
   const [dlError, setDlError] = useState(false);
   const [dlg, setDlg] = useState<null | 'reset' | { backup: Awaited<ReturnType<typeof exportBackup>> }>(null);
@@ -102,6 +103,17 @@ export default function More() {
             </div>
             <small className="muted">Mostra um aviso na tela inicial se você ainda não leu depois desse horário.</small>
           </div>
+          <div className="field">
+            <span>Meta de leitura: {settings.weeklyGoal} {settings.weeklyGoal === 1 ? 'dia' : 'dias'} por semana</span>
+            <input id="weekly-goal" aria-label="Meta de dias de leitura por semana" type="range" min={1} max={7} value={settings.weeklyGoal} onChange={(e) => void setSetting('weeklyGoal', Number(e.target.value))} />
+          </div>
+          <div className="field">
+            <span>Ao abrir o app</span>
+            <Segmented<StartArea> value={settings.startArea} onChange={(v) => void setSetting('startArea', v)}
+              options={[{ value: 'ask', label: 'Perguntar' }, { value: 'igreja', label: 'Igreja' }, { value: 'estudos', label: 'Estudos' }]} />
+            <small className="muted">“Início” na barra da Igreja sempre volta para a tela de escolha.</small>
+          </div>
+          <button className="btn ghost" onClick={() => void setSetting('onboarded', false).then(() => nav('/'))}>Rever o guia inicial</button>
         </section>
 
         <section className="card">

@@ -1,5 +1,5 @@
-import { BOOKS, TOTAL_CHAPTERS, bookOffset } from '../data/books';
-import { addDays, diffDays } from './date';
+import { BOOKS, TOTAL_CHAPTERS, bookOffset, chapterWeight } from '../data/books';
+import { addDays, diffDays, weekdayOf } from './date';
 
 /**
  * Sequência de dias lendo. Regra "dia de graça": perder UM dia isolado não quebra a
@@ -72,3 +72,41 @@ export function nextUnreadAfter(read: Set<number>, afterId: number): number | nu
 }
 
 export const pctText = (x: number) => `${Math.floor(x * 100)}%`;
+
+/** Tempo estimado de leitura em minutos (média de ~20 palavras por versículo, ~170 palavras/min). */
+export function estimateMinutes(chapterIds: number[]): number {
+  const verses = chapterIds.reduce((a, id) => a + chapterWeight(id), 0);
+  return verses === 0 ? 0 : Math.max(1, Math.round((verses * 20) / 170));
+}
+
+/** Quantos capítulos foram lidos em cada dia (o log tem uma linha por capítulo/dia). */
+export function dayCounts(dates: Iterable<string>): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const d of dates) m.set(d, (m.get(d) ?? 0) + 1);
+  return m;
+}
+
+export interface HeatCell { date: string; count: number; level: 0 | 1 | 2 | 3 | 4; future: boolean }
+
+const levelOf = (n: number): HeatCell['level'] => (n <= 0 ? 0 : n <= 2 ? 1 : n <= 5 ? 2 : n <= 9 ? 3 : 4);
+
+/** Colunas = semanas (segunda a domingo), da mais antiga para a atual. */
+export function heatmapWeeks(counts: Map<string, number>, today: string, weeks = 12): HeatCell[][] {
+  const dow = (weekdayOf(today) + 6) % 7;               // segunda = 0
+  const start = addDays(today, -dow - (weeks - 1) * 7);  // segunda da semana mais antiga
+  return Array.from({ length: weeks }, (_, w) =>
+    Array.from({ length: 7 }, (_, d) => {
+      const date = addDays(start, w * 7 + d);
+      const count = counts.get(date) ?? 0;
+      return { date, count, level: levelOf(count), future: diffDays(today, date) > 0 };
+    }));
+}
+
+/** Dias lidos na semana atual (segunda a domingo). */
+export function weekProgress(dates: Iterable<string>, today: string): { days: number; flags: boolean[]; weekStart: string } {
+  const set = new Set(dates);
+  const dow = (weekdayOf(today) + 6) % 7;
+  const weekStart = addDays(today, -dow);
+  const flags = Array.from({ length: 7 }, (_, i) => set.has(addDays(weekStart, i)));
+  return { days: flags.filter(Boolean).length, flags, weekStart };
+}

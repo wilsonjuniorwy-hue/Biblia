@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { HashRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './app/AppContext';
-import { db } from './db/db';
-import { TabBar, Toasts, type Area } from './components/ui';
+import { db, setSetting } from './db/db';
+import { Confetti, TabBar, Toasts, type Area } from './components/ui';
 import { StorageProblem } from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Welcome from './pages/Welcome';
@@ -17,9 +17,10 @@ import More from './pages/More';
 import { About, Saved } from './pages/Saved';
 
 function Shell() {
-  const { settings, ready, dbError } = useApp();
+  const { settings, ready, dbError, confetti } = useApp();
   const [slow, setSlow] = useState(false);
   const { pathname } = useLocation();
+  const nav = useNavigate();
 
   // Área atual (Igreja ou Estudos): define a barra de abas nas telas compartilhadas, como a Bíblia.
   const [area, setArea] = useState<Area>(() => {
@@ -31,6 +32,7 @@ function Shell() {
     if (next && next !== area) {
       setArea(next);
       try { sessionStorage.setItem('area', next); } catch { /* ignora */ }
+      void setSetting('lastArea', next);
     } else if (next) {
       try { sessionStorage.setItem('area', next); } catch { /* ignora */ }
     }
@@ -45,6 +47,17 @@ function Shell() {
     const bg = { auto: '#14213d', light: '#faf7f0', dark: '#0f1626', sepia: '#f1e6cc' }[settings.theme];
     meta?.setAttribute('content', bg);
   }, [settings.theme]);
+
+  // Abertura do app: vai direto para a área escolhida em Mais (só na primeira tela da sessão; "Início" sempre mostra a entrada)
+  const started = useRef(false);
+  useEffect(() => {
+    if (!ready || started.current) return;
+    started.current = true;
+    let first = true;
+    try { first = sessionStorage.getItem('startHandled') === null; sessionStorage.setItem('startHandled', '1'); } catch { /* ignora */ }
+    if (first && pathname === '/' && settings.startArea !== 'ask') nav(settings.startArea === 'igreja' ? '/igreja' : '/estudos', { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   // Primeira abertura: registra a data
   useEffect(() => {
@@ -69,6 +82,7 @@ function Shell() {
       <Outlet />
       {reading ? null : <TabBar area={area} />}
       <Toasts />
+      <Confetti trigger={confetti} />
     </div>
   );
 }

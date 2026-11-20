@@ -30,3 +30,9 @@ export function dayOfYear(s: string): number {
   const [y] = parts(s);
   return diffDays(`${y}-01-01`, s);
 }
+
+/** Dia da semana de uma data AAAA-MM-DD: 0 = domingo … 6 = sábado. */
+export function weekdayOf(date: string): number {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}

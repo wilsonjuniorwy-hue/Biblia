@@ -3,11 +3,18 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { BOOKS, GROUPS, TOTAL_CHAPTERS, bookOffset } from '../data/books';
 import { finishReading } from '../db/db';
-import { bookProgress, overall } from '../lib/stats';
+import { bookProgress, dayCounts, heatmapWeeks, overall } from '../lib/stats';
+import { formatDate } from '../lib/date';
+import { WeekGoal } from '../components/WeekGoal';
+import { ShareImageSheet } from '../components/ShareImageSheet';
+import { Icon } from '../components/icons';
 import { Confirm, PageHeader, ProgressBar, Ring, Segmented } from '../components/ui';
 
 export default function ProgressPage() {
-  const { read, streak, settings, readDates, toast } = useApp();
+  const { read, streak, settings, readDates, toast, today } = useApp();
+  const [shareOpen, setShareOpen] = useState(false);
+  const heat = heatmapWeeks(dayCounts(readDates), today, 12);
+  const heatTotal = heat.flat().reduce((a, c) => a + c.count, 0);
   const [view, setView] = useState<'tudo' | 'falta'>('tudo');
   const [finishDlg, setFinishDlg] = useState(false);
   const s = overall(read);
@@ -48,6 +55,27 @@ export default function ProgressPage() {
           <ProgressBar value={s.ntPct} label={`Novo Testamento: ${s.nt} de ${s.ntTotal} capítulos lidos`} />
           <p className="muted small">Você leu em {activeDays} {activeDays === 1 ? 'dia' : 'dias'} diferentes{settings.completedReadings ? ` · já completou a Bíblia ${settings.completedReadings}×` : ''}.</p>
         </section>
+
+        <WeekGoal />
+
+        <section className="card" aria-label="Calendário de leitura">
+          <div className="row between">
+            <h2 className="card-title">Últimas 12 semanas</h2>
+            <span className="muted small">{heatTotal} {heatTotal === 1 ? 'capítulo' : 'capítulos'}</span>
+          </div>
+          <div className="heat" role="img" aria-label={`Calendário de leitura das últimas 12 semanas: ${heatTotal} capítulos lidos`}>
+            {heat.map((week, wi) => (
+              <div key={wi} className="heat-col">
+                {week.map((c) => (
+                  <span key={c.date} className={`heat-cell l${c.level} ${c.future ? 'future' : ''}`} title={`${formatDate(c.date, { day: '2-digit', month: 'short' })}: ${c.count} ${c.count === 1 ? 'capítulo' : 'capítulos'}`} />
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="heat-legend"><span>menos</span>{[0, 1, 2, 3, 4].map((l) => <span key={l} className={`heat-cell l${l}`} />)}<span>mais</span></div>
+        </section>
+
+        <button className="btn ghost" onClick={() => setShareOpen(true)}><span className="row gap"><Icon name="share" size={18} /> Compartilhar meu progresso</span></button>
 
         {complete ? (
           <section className="card hero">
@@ -100,6 +128,7 @@ export default function ProgressPage() {
         {view === 'falta' && complete ? <p className="center">Nada falta! 🎉</p> : null}
       </main>
 
+      <ShareImageSheet open={shareOpen} onClose={() => setShareOpen(false)} spec={{ kind: 'progress', data: { pct: s.pct, read: s.read, total: TOTAL_CHAPTERS, streak: streak.current, books: booksDone.length } }} />
       <Confirm
         open={finishDlg} title="Recomeçar a leitura?"
         text="A leitura será contada como concluída e o mapa volta a zero. Favoritos e notas são mantidos."
