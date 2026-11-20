@@ -37,3 +37,10 @@ em `src/db/db.ts`) já serializa tudo; é o ponto natural para sincronizar.
   **Ao integrar o Supabase** (ou qualquer API/anúncio externo), acrescente o domínio em `connect-src` (e `script-src`/`img-src` se for o caso).
 - Tudo que vem do IndexedDB ou de um backup passa por `src/lib/sanitize.ts`: valores inválidos viram o padrão e nunca travam o app.
 - Se o armazenamento do navegador estiver indisponível (janela privada, bloqueio), o app mostra uma explicação em vez de ficar carregando.
+
+## Personalizar (sem mexer no resto do código)
+- **Igreja** — `src/data/church.ts`: nome, horários, eventos, avisos, mensagem da semana, ministérios, contato, PIX, boletim e fotos.
+  O cartão **"Ao vivo agora"** liga sozinho no horário de cada reunião (`liveMinutes`); preencha `liveUrl` para o botão de transmissão.
+  Fotos: coloque em `public/images/` e liste em `photos`. Troque `demo` para `false` ao publicar.
+- **Introdução dos livros** — `src/data/bookIntros.ts` (autor, época, tema, resumo).
+- **Planos** — `src/data/plans.ts` (3 da Bíblia inteira e 4 curtos: Salmos 30 dias, Provérbios 31, Evangelhos 30, NT 90).

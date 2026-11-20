@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-r
 import { useApp } from '../app/AppContext';
 import { BOOKS, GROUPS, bookOffset, chapterId } from '../data/books';
 import { TOPICS } from '../data/topics';
+import { BOOK_INTROS } from '../data/bookIntros';
 import { bookProgress } from '../lib/stats';
 import { Confirm, PageHeader, ProgressBar, Segmented } from '../components/ui';
 import { SearchResults } from '../components/SearchResults';
@@ -117,6 +118,17 @@ function BookInner({ id }: { id: number }) {
               </button>
             ) : null}
           </div>
+        </section>
+
+        <section className="card book-intro" aria-label={`Sobre ${book.name}`}>
+          <h2 className="card-title">Sobre este livro</h2>
+          <p className="intro-theme">{BOOK_INTROS[id].theme}</p>
+          <p>{BOOK_INTROS[id].summary}</p>
+          <dl className="intro-meta">
+            <div><dt>Autor</dt><dd>{BOOK_INTROS[id].author}</dd></div>
+            <div><dt>Época</dt><dd>{BOOK_INTROS[id].when}</dd></div>
+          </dl>
+          <p className="muted small">Autoria e datas seguem a tradição e são aproximadas.</p>
         </section>
 
         <h2 className="section-title">Capítulos</h2>

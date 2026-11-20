@@ -145,3 +145,38 @@ describe('situação do plano', () => {
     expect(flat.length).toBe(TOTAL_CHAPTERS - read.size);
   });
 });
+
+describe('planos curtos', () => {
+  const cases: [PlanType, number, number][] = [['salmos30', 150, 30], ['proverbios31', 31, 31], ['evangelhos30', 89, 30], ['nt90', 260, 90]];
+  it.each(cases)('%s cobre exatamente os capítulos do tema', (type, chapters, days) => {
+    const flat = streamsFor(type).flat();
+    expect(flat.length).toBe(chapters);
+    expect(new Set(flat).size).toBe(chapters);
+    const plan = planChapters({ type, days, excluded: [] });
+    expect(plan.length).toBe(days);
+    expect(plan.flat()).toEqual(flat);               // todos, sem repetir, na ordem
+  });
+  it('Provérbios: 1 capítulo por dia (Pv 1 no dia 1 … Pv 31 no dia 31)', () => {
+    const plan = planChapters({ type: 'proverbios31', days: 31, excluded: [] });
+    expect(plan.every((d) => d.length === 1)).toBe(true);
+    expect(fromChapterId(plan[0][0])).toEqual({ book: 19, chapter: 1 });
+    expect(fromChapterId(plan[30][0])).toEqual({ book: 19, chapter: 31 });
+  });
+  it('Salmos: 5 por dia, mesmo com o Salmo 119 enorme', () => {
+    const plan = planChapters({ type: 'salmos30', days: 30, excluded: [] });
+    expect(plan.every((d) => d.length === 5)).toBe(true);
+  });
+  it('Evangelhos e NT: nenhum dia vazio e carga equilibrada', () => {
+    for (const [t, days, max] of [['evangelhos30', 30, 8], ['nt90', 90, 6]] as [PlanType, number, number][]) {
+      const plan = planChapters({ type: t, days, excluded: [] });
+      expect(plan.every((d) => d.length >= 1 && d.length <= max), t).toBe(true);
+    }
+  });
+  it('reajustar um plano curto só redistribui o que falta', () => {
+    const cfg: PlanConfig = { type: 'salmos30', days: 30, startDate: '2026-11-01', excluded: [] };
+    const read = new Set(planChapters(cfg).slice(0, 4).flat());          // 20 salmos lidos
+    const nc = rebalance(cfg, read, '2026-11-05')!;
+    expect(nc.days).toBe(26);
+    expect(planChapters(nc).flat().length).toBe(130);
+  });
+});

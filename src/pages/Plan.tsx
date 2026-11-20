@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { chapterId, segmentLabel } from '../data/books';
-import { DURATIONS, PLAN_INFO, planDays, planStatus, rebalance, suggestedPerDay, type PlanConfig, type PlanType } from '../data/plans';
+import { DURATIONS, FULL_PLANS, PLAN_INFO, SHORT_PLANS, planDays, planStatus, rebalance, suggestedPerDay, type PlanConfig, type PlanType } from '../data/plans';
 import { setSetting } from '../db/db';
 import { addDays, formatDate } from '../lib/date';
 import { estimateMinutes } from '../lib/stats';
@@ -28,11 +28,13 @@ function Setup({ initial, onDone }: { initial?: PlanType; onDone?: () => void })
   const [start, setStart] = useState(today);
   const [skipRead, setSkipRead] = useState(read.size > 0);
   const excluded = useMemo(() => (skipRead ? [...read] : []), [skipRead, read]);
-  const perDay = suggestedPerDay(type, days, excluded);
+  const fixed = PLAN_INFO[type].fixedDays;
+  const total = fixed ?? days;
+  const perDay = suggestedPerDay(type, total, excluded);
 
   const begin = async () => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(start)) { toast('Escolha uma data de início válida.'); return; }
-    const cfg: PlanConfig = { type, days, startDate: start, excluded };
+    const cfg: PlanConfig = { type, days: total, startDate: start, excluded };
     await setSetting('plan', cfg);
     toast('Plano iniciado! Boa leitura 🙏');
     onDone?.();
@@ -40,8 +42,20 @@ function Setup({ initial, onDone }: { initial?: PlanType; onDone?: () => void })
 
   return (
     <>
+      <h2 className="section-title">Bíblia inteira</h2>
       <div className="plan-options">
-        {(Object.keys(PLAN_INFO) as PlanType[]).map((t) => (
+        {FULL_PLANS.map((t) => (
+          <button key={t} className={`plan-card ${type === t ? 'on' : ''}`} onClick={() => setType(t)} aria-pressed={type === t}>
+            <strong>{PLAN_INFO[t].name}</strong>
+            <span className="small">{PLAN_INFO[t].short}</span>
+            <span className="muted small">{PLAN_INFO[t].desc}</span>
+          </button>
+        ))}
+      </div>
+
+      <h2 className="section-title">Planos curtos</h2>
+      <div className="plan-options short">
+        {SHORT_PLANS.map((t) => (
           <button key={t} className={`plan-card ${type === t ? 'on' : ''}`} onClick={() => setType(t)} aria-pressed={type === t}>
             <strong>{PLAN_INFO[t].name}</strong>
             <span className="small">{PLAN_INFO[t].short}</span>
@@ -51,15 +65,24 @@ function Setup({ initial, onDone }: { initial?: PlanType; onDone?: () => void })
       </div>
 
       <section className="card">
-        <h2 className="card-title">Duração</h2>
-        <div className="row gap wrap">
-          {DURATIONS.map((d) => (
-            <button key={d} className={`chip ${days === d ? 'on' : ''}`} onClick={() => setDays(d)}>
-              {d === 365 ? '1 ano (365 dias)' : `${d} dias`}
-            </button>
-          ))}
-        </div>
-        <p className="muted small">≈ {perDay.toFixed(1).replace('.', ',')} capítulos por dia{days < 365 ? ' — um ritmo mais intenso' : ''}.</p>
+        {fixed ? (
+          <>
+            <h2 className="card-title">Duração</h2>
+            <p>{PLAN_INFO[type].name}: <strong>{fixed} dias</strong>, ≈ {perDay.toFixed(1).replace('.', ',')} capítulos por dia.</p>
+          </>
+        ) : (
+          <>
+            <h2 className="card-title">Duração</h2>
+            <div className="row gap wrap">
+              {DURATIONS.map((d) => (
+                <button key={d} className={`chip ${days === d ? 'on' : ''}`} onClick={() => setDays(d)}>
+                  {d === 365 ? '1 ano (365 dias)' : `${d} dias`}
+                </button>
+              ))}
+            </div>
+            <p className="muted small">≈ {perDay.toFixed(1).replace('.', ',')} capítulos por dia{days < 365 ? ' — um ritmo mais intenso' : ''}.</p>
+          </>
+        )}
 
         <label className="field">
           <span>Data de início</span>

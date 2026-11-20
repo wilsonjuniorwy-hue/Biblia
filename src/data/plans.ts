@@ -1,7 +1,11 @@
 import { BOOKS, TOTAL_CHAPTERS, bookOffset, chapterId, chapterWeight, toSegments, type Segment } from './books';
 import { addDays, diffDays } from '../lib/date';
 
-export type PlanType = 'sequencial' | 'cronologico' | 'misto';
+export type PlanType = 'sequencial' | 'cronologico' | 'misto' | 'salmos30' | 'proverbios31' | 'evangelhos30' | 'nt90';
+
+/** Planos da Bíblia inteira (duração escolhida pelo usuário) e planos curtos (duração fixa). */
+export const FULL_PLANS: PlanType[] = ['misto', 'sequencial', 'cronologico'];
+export const SHORT_PLANS: PlanType[] = ['salmos30', 'proverbios31', 'evangelhos30', 'nt90'];
 
 export interface PlanConfig {
   type: PlanType;
@@ -13,7 +17,7 @@ export interface PlanConfig {
   excluded: number[];
 }
 
-export const PLAN_INFO: Record<PlanType, { name: string; short: string; desc: string }> = {
+export const PLAN_INFO: Record<PlanType, { name: string; short: string; desc: string; fixedDays?: number }> = {
   sequencial: {
     name: 'Sequencial',
     short: 'De Gênesis a Apocalipse',
@@ -29,6 +33,10 @@ export const PLAN_INFO: Record<PlanType, { name: string; short: string; desc: st
     short: 'AT + Salmos/Provérbios + NT todo dia',
     desc: 'Todo dia um pouco do Antigo Testamento, um Salmo ou Provérbio e um trecho do Novo Testamento.',
   },
+  salmos30: { name: 'Salmos em 30 dias', short: '5 Salmos por dia', desc: 'Os 150 Salmos em um mês: oração e louvor para o dia a dia.', fixedDays: 30 },
+  proverbios31: { name: 'Provérbios em 31 dias', short: '1 capítulo por dia', desc: 'Um capítulo de Provérbios por dia, um mês inteiro de sabedoria prática.', fixedDays: 31 },
+  evangelhos30: { name: 'Evangelhos em 30 dias', short: 'Mateus, Marcos, Lucas e João', desc: 'A vida e os ensinos de Jesus, lidos em um mês.', fixedDays: 30 },
+  nt90: { name: 'Novo Testamento em 90 dias', short: '~3 capítulos por dia', desc: 'Do Evangelho de Mateus ao Apocalipse em três meses.', fixedDays: 90 },
 };
 
 export const DURATIONS = [365, 180, 90] as const;
@@ -101,7 +109,16 @@ const MIXED_STREAMS: number[][] = [
   SEQUENTIAL.filter((id) => id >= NT_START),                 // Novo Testamento
 ];
 
+const bookIds = (...abbrs: string[]) => SEQUENTIAL.filter((id) => abbrs.some((a) => BOOKS[B(a)].chapters > 0 && id >= bookOffset(B(a)) && id < bookOffset(B(a)) + BOOKS[B(a)].chapters));
+
+/** Planos em que cada dia recebe o mesmo número de capítulos (e não o mesmo número de versículos). */
+const BY_COUNT = new Set<PlanType>(['salmos30', 'proverbios31']);
+
 export function streamsFor(type: PlanType): number[][] {
+  if (type === 'salmos30') return [bookIds('Sl')];
+  if (type === 'proverbios31') return [bookIds('Pv')];
+  if (type === 'evangelhos30') return [bookIds('Mt', 'Mc', 'Lc', 'Jo')];
+  if (type === 'nt90') return [SEQUENTIAL.filter((id) => id >= NT_START)];
   if (type === 'cronologico') return [CHRONOLOGICAL];
   if (type === 'misto') return MIXED_STREAMS;
   return [SEQUENTIAL];
@@ -116,8 +133,9 @@ export function streamsFor(type: PlanType): number[][] {
  * Cada capítulo vai para o dia em que cai o seu "ponto médio", o que mantém a ordem
  * e equilibra a carga diária.
  */
-export function distribute(ids: number[], days: number): number[][] {
+export function distribute(ids: number[], days: number, byCount = false): number[][] {
   const out: number[][] = Array.from({ length: days }, () => []);
+  if (byCount) { ids.forEach((id, i) => out[Math.min(days - 1, Math.floor((i * days) / ids.length))].push(id)); return out; }
   const total = ids.reduce((a, id) => a + chapterWeight(id), 0);
   if (total === 0) return out;
   let acc = 0;
@@ -138,7 +156,7 @@ export function planChapters(cfg: Pick<PlanConfig, 'type' | 'days' | 'excluded'>
   const hit = memo.get(key);
   if (hit) return hit;
   const skip = new Set(cfg.excluded);
-  const perStream = streamsFor(cfg.type).map((s) => distribute(s.filter((id) => !skip.has(id)), cfg.days));
+  const perStream = streamsFor(cfg.type).map((s) => distribute(s.filter((id) => !skip.has(id)), cfg.days, BY_COUNT.has(cfg.type)));
   const days = Array.from({ length: cfg.days }, (_, d) => perStream.flatMap((s) => s[d]));
   if (memo.size > 20) memo.clear();
   memo.set(key, days);
