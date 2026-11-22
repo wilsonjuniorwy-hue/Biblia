@@ -10,3 +10,6 @@ dist
 musica fundo devocional/
 amostra-*.mp3
 demonstracao-*.mp3
+
+# Arquivos que nao servem (podem ser apagados)
+pode apagar/
