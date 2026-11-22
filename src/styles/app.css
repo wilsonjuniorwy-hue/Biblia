@@ -350,3 +350,15 @@ html { touch-action: manipulation; }
   .welcome-foot { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); }
   .install-card { margin-top: 10px; padding: 10px 14px; gap: 6px; font-size: 13px; }
 }
+
+/* Devocional */
+.devotional .dev-text p { margin: 0; line-height: 1.75; font: 17px/1.75 var(--serif); }
+.devotional .dev-verses p { margin: 0 0 .5em; font: italic 17px/1.65 var(--serif); }
+.devotional .dev-question, .devotional .dev-prayer { margin: 0; font: 17px/1.7 var(--serif); }
+.devotional .dev-prayer { font-style: italic; }
+.devotional .speaking { background: color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 8px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); transition: background .2s; }
+.devotional .hero h2 { font: 700 24px var(--serif); }
+.rate { display: inline-flex; background: color-mix(in srgb, var(--on-primary) 14%, transparent); border-radius: 10px; padding: 2px; }
+.rate button { border: 0; background: transparent; color: var(--on-primary); padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; min-height: 36px; }
+.rate button.on { background: var(--accent); color: #14213d; }
+.devo-card .devo-play { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #14213d; flex: none; }

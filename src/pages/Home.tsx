@@ -4,6 +4,7 @@ import { useApp } from '../app/AppContext';
 import { BOOKS, TOTAL_CHAPTERS, chapterId, fromChapterId, segmentLabel } from '../data/books';
 import { PLAN_INFO, planStatus, rebalance } from '../data/plans';
 import { verseOfTheDay, refLabel } from '../data/topics';
+import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
 import { loadBook, translationById } from '../data/bible';
 import { setSetting } from '../db/db';
 import { dayOfYear, formatDate } from '../lib/date';
@@ -116,6 +117,9 @@ export default function Home() {
           </section>
         )}
 
+        {/* Devocional */}
+        <DevotionalCard />
+
         {/* Continuar */}
         <section className="card">
           <div className="row between">
@@ -154,6 +158,21 @@ export default function Home() {
         {settings.completedReadings > 0 ? <p className="muted center small">📚 Bíblias completas lidas: {settings.completedReadings}</p> : null}
       </main>
     </>
+  );
+}
+
+function DevotionalCard() {
+  const { today } = useApp();
+  const dev = devotionalOfTheDay(dayOfYear(today));
+  return (
+    <Link to="/devocional" className="card row gap center-y link-card devo-card">
+      <div className="grow">
+        <small className="eyebrow">Devocional de hoje · ~{devotionalMinutes(dev)} min · com áudio</small>
+        <h3>{dev.title}</h3>
+        <p className="muted">{refLabel(dev.ref)}</p>
+      </div>
+      <span className="devo-play" aria-hidden>▶</span>
+    </Link>
   );
 }
 

@@ -14,6 +14,7 @@ import ProgressPage from './pages/Progress';
 import SearchPage from './pages/Search';
 import TopicPage from './pages/Topic';
 import More from './pages/More';
+import DevotionalPage from './pages/Devotional';
 import { About, Saved } from './pages/Saved';
 
 function Shell() {
@@ -28,7 +29,7 @@ function Shell() {
   });
   useEffect(() => {
     const next: Area | null = pathname.startsWith('/igreja') ? 'igreja'
-      : ['/estudos', '/plano', '/progresso', '/mais'].some((p) => pathname.startsWith(p)) ? 'estudos' : null;
+      : ['/estudos', '/plano', '/progresso', '/mais', '/devocional'].some((p) => pathname.startsWith(p)) ? 'estudos' : null;
     if (next && next !== area) {
       setArea(next);
       try { sessionStorage.setItem('area', next); } catch { /* ignora */ }
@@ -99,6 +100,7 @@ export default function App() {
             <Route path="biblia" element={<Bible />} />
             <Route path="biblia/:book" element={<BookPage />} />
             <Route path="ler/:book/:chapter" element={<Reader />} />
+            <Route path="devocional" element={<DevotionalPage />} />
             <Route path="plano" element={<PlanPage />} />
             <Route path="progresso" element={<ProgressPage />} />
             <Route path="buscar" element={<SearchPage />} />
