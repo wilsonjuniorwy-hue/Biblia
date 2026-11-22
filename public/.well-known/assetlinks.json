@@ -1,11 +1,15 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "br.com.faroldefe.biblia",
       "sha256_cert_fingerprints": [
-        "94:33:C4:4E:7A:21:8C:80:9D:28:EE:B2:B6:56:DC:0F:87:EB:A1:CE:41:8C:84:55:CA:E6:17:5C:E8:31:E5:8C"
+        "94:33:C4:4E:7A:21:8C:80:9D:28:EE:B2:B6:56:DC:0F:87:EB:A1:CE:41:8C:84:55:CA:E6:17:5C:E8:31:E5:8C",
+        "C9:D1:85:A0:CE:FA:56:0D:C0:98:71:AD:E8:4F:14:EC:22:56:77:26:8D:4B:FC:F1:04:42:50:90:67:DA:A7:6C",
+        "7E:F3:64:A4:14:E7:A9:50:D5:4B:FF:60:A7:E2:28:6A:F1:B0:EB:04:96:D1:94:1B:C4:B9:50:24:C1:15:69:10"
       ]
     }
   }
