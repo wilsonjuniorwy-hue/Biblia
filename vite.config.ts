@@ -36,6 +36,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
         navigateFallback: 'index.html',
+        // páginas estáticas (política de privacidade, verificação do app Android) não podem cair no index.html
+        navigateFallbackDenylist: [/^\/privacidade/, /^\/\.well-known\//],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.includes('/bible/'),
