@@ -1,14 +1,19 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons';
-import { PageHeader } from '../components/ui';
+import { PageHeader, Sheet } from '../components/ui';
 import { YOUTUBE_URL } from '../data/links';
 import { refLabel } from '../data/topics';
-import { isNewVideo, videoRef, videoUrl, visibleVideos } from '../data/videos';
+import { embedUrl, isNewVideo, videoRef, videoUrl, visibleVideos, type Video } from '../data/videos';
 
-/** Vídeos do canal Farol de Fé. Cada um abre no YouTube; a passagem pode ser lida no próprio app. */
+/**
+ * Vídeos do canal Farol de Fé. "Assistir" abre o player do YouTube numa janela do próprio app.
+ * Nada é carregado do YouTube até a pessoa tocar em Assistir (o player só nasce com a janela aberta).
+ */
 export default function VideosPage() {
   const now = Date.now();
   const list = visibleVideos(now);
+  const [playing, setPlaying] = useState<Video | null>(null);
   return (
     <>
       <PageHeader title="Vídeos" sub="Canal Farol de Fé no YouTube" back="/menu" />
@@ -30,13 +35,41 @@ export default function VideosPage() {
               </div>
               <h3>{v.title}</h3>
               <div className="row gap wrap">
-                <a className="btn primary small ico" href={videoUrl(v)} target="_blank" rel="noopener noreferrer"><Icon name="play" size={16} /> Assistir</a>
+                <button className="btn primary small ico" onClick={() => setPlaying(v)}><Icon name="play" size={16} /> Assistir</button>
                 <Link className="btn ghost small" to={`/ler/${r.book}/${r.chapter}?v=${r.from}${r.to > r.from ? `-${r.to}` : ''}`}>Ler no app</Link>
               </div>
             </article>
           );
         })}
       </main>
+
+      <Sheet open={!!playing} onClose={() => setPlaying(null)} title={playing?.title}>
+        {playing ? <Player video={playing} /> : null}
+      </Sheet>
     </>
+  );
+}
+
+function Player({ video }: { video: Video }) {
+  const online = typeof navigator === 'undefined' ? true : navigator.onLine;
+  return (
+    <div className="player">
+      {online ? (
+        <div className={`video-frame ${video.short ? 'short' : ''}`}>
+          <iframe
+            title={video.title}
+            src={embedUrl(video)}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
+          />
+        </div>
+      ) : (
+        <p className="muted">Sem internet no momento. Os vídeos precisam de conexão: tente de novo quando estiver online.</p>
+      )}
+      <p className="muted small">O vídeo é carregado do YouTube (modo sem cookies) só quando você toca em Assistir.</p>
+      <a className="btn ghost small" href={videoUrl(video)} target="_blank" rel="noopener noreferrer">Abrir no YouTube</a>
+    </div>
   );
 }

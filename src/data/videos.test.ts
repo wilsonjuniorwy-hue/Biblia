@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { VIDEOS, isNewVideo, videoRef, visibleVideos } from './videos';
+import { VIDEOS, embedUrl, isNewVideo, videoRef, visibleVideos } from './videos';
 import { VERSE_COUNTS } from './books';
 
 const at = (iso: string) => Date.parse(iso);
@@ -27,5 +27,12 @@ describe('vídeos do canal', () => {
     expect(isNewVideo(v, at('2026-11-30T13:00:00-03:00'))).toBe(true);
     expect(isNewVideo(v, at('2026-12-05T13:00:00-03:00'))).toBe(false);
     expect(isNewVideo(VIDEOS[0], at('2026-11-30T13:00:00-03:00'))).toBe(false);
+  });
+  it('o player usa só o domínio sem cookies do YouTube, com o id do vídeo', () => {
+    for (const v of VIDEOS) {
+      const u = new URL(embedUrl(v));
+      expect(u.origin).toBe('https://www.youtube-nocookie.com');
+      expect(u.pathname).toBe('/embed/' + v.id);
+    }
   });
 });

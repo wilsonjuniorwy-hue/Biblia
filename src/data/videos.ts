@@ -14,22 +14,24 @@ export interface Video {
   ref: string;
   /** Data e hora de publicação, só para os agendados. */
   publishAt?: string;
+  /** Vídeo vertical (Shorts): o player abre em formato de celular. */
+  short?: true;
 }
 
 export const VIDEOS: Video[] = [
-  { id: 'f1HrYafLgzw', title: 'A Parábola da Madrugada: Deus Não Esquece de Você!', ref: 'Mt 6:26' },
-  { id: '5Ee4yV2PVng', title: 'A Parábola do Pão: O Justo Jamais Desamparado', ref: 'Sl 37:25', publishAt: '2026-11-22T12:00:00-03:00' },
+  { id: 'f1HrYafLgzw', title: 'A Parábola da Madrugada: Deus Não Esquece de Você!', ref: 'Mt 6:26', short: true },
+  { id: '5Ee4yV2PVng', title: 'A Parábola do Pão: O Justo Jamais Desamparado', ref: 'Sl 37:25', publishAt: '2026-11-22T12:00:00-03:00', short: true },
   { id: 'ss7Bxg_aXJE', title: 'Do Poço ao Palácio: Quando Deus Transforma a Dor em Propósito', ref: 'Gn 50:20' },
-  { id: 'ou6XJJ0Nxf4', title: 'Por que Davi pegou 5 pedras se só precisava de uma?', ref: '1Sm 17:40' },
-  { id: '_76Yhf6vzGQ', title: 'Oração de 30 Segundos Contra a Ansiedade', ref: 'Fp 4:6-7' },
-  { id: 'GMyjIGx8WSE', title: 'A Tempestade que Jesus Acalmou no Barco', ref: 'Mc 4:39' },
+  { id: 'ou6XJJ0Nxf4', title: 'Por que Davi pegou 5 pedras se só precisava de uma?', ref: '1Sm 17:40', short: true },
+  { id: '_76Yhf6vzGQ', title: 'Oração de 30 Segundos Contra a Ansiedade', ref: 'Fp 4:6-7', short: true },
+  { id: 'GMyjIGx8WSE', title: 'A Tempestade que Jesus Acalmou no Barco', ref: 'Mc 4:39', short: true },
   { id: 'sX5YF4AZ7oY', title: 'Deus Tem Planos de Esperança Para Você', ref: 'Jr 29:11' },
   { id: 'qctfmw0ybm4', title: 'Ainda Que a Figueira Não Floresça, Eu Me Alegrarei no Senhor', ref: 'Hc 3:17-18', publishAt: '2026-11-22T14:00:00-03:00' },
   { id: 'wQzfUtmbtMY', title: 'Encontre Descanso Para a Sua Alma Cansada', ref: 'Mt 11:28-29', publishAt: '2026-11-22T18:00:00-03:00' },
-  { id: 'SDfotj_UN-U', title: 'Oração para Dormir em Paz', ref: 'Sl 4:8', publishAt: '2026-11-22T20:00:00-03:00' },
-  { id: '2Gs9l9hzdAc', title: 'A Decisão sobre a sua Família', ref: 'Js 24:15', publishAt: '2026-11-23T07:00:00-03:00' },
-  { id: '2O87gh0MEV0', title: 'O Caminho no Deserto', ref: 'Is 43:19', publishAt: '2026-11-23T12:00:00-03:00' },
-  { id: 'TRPUGklA6Oo', title: 'O Esconderijo do Altíssimo', ref: 'Sl 91:1-2', publishAt: '2026-11-23T20:00:00-03:00' },
+  { id: 'SDfotj_UN-U', title: 'Oração para Dormir em Paz', ref: 'Sl 4:8', publishAt: '2026-11-22T20:00:00-03:00', short: true },
+  { id: '2Gs9l9hzdAc', title: 'A Decisão sobre a sua Família', ref: 'Js 24:15', publishAt: '2026-11-23T07:00:00-03:00', short: true },
+  { id: '2O87gh0MEV0', title: 'O Caminho no Deserto', ref: 'Is 43:19', publishAt: '2026-11-23T12:00:00-03:00', short: true },
+  { id: 'TRPUGklA6Oo', title: 'O Esconderijo do Altíssimo', ref: 'Sl 91:1-2', publishAt: '2026-11-23T20:00:00-03:00', short: true },
   { id: 'wTx3hXaBWZU', title: 'Nada Pode Separar Você do Amor de Deus', ref: 'Rm 8:38-39', publishAt: '2026-11-24T12:00:00-03:00' },
   { id: '0wpbhes31LU', title: 'Todas as Coisas Cooperam Para o Seu Bem', ref: 'Rm 8:28', publishAt: '2026-11-25T12:00:00-03:00' },
   { id: '_K6bZR9P__8', title: 'O Senhor é o Meu Pastor: Meu Cálice Transborda', ref: 'Sl 23:5', publishAt: '2026-11-26T12:00:00-03:00' },
@@ -40,6 +42,9 @@ export const VIDEOS: Video[] = [
 ];
 
 export const videoUrl = (v: Video) => `https://youtu.be/${v.id}`;
+
+/** Player embutido (domínio sem cookies do YouTube). Só é carregado quando a pessoa toca em Assistir. */
+export const embedUrl = (v: Video) => `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&rel=0&playsinline=1&modestbranding=1`;
 export const videoRef = (v: Video): VerseRef => parseVerseRef(v.ref);
 
 /** Vídeos já no ar em `now`: mais recentes primeiro (os agendados por data; os antigos, sem data, no fim, na ordem da lista). */

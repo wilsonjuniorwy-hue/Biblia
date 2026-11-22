@@ -79,7 +79,7 @@ export function About() {
         <h3>Áudios dos devocionais e música</h3>
         <p>A narração do devocional utiliza voz neural feminina suave em português do Brasil. O fundo musical instrumental conta com as faixas <em>Quiet Devotion</em>, <em>Quiet Contemplation</em> e <em>Devem ser assim</em>, criadas por Wagner Junior e autorizadas para uso no aplicativo.</p>
         <h3>Privacidade</h3>
-        <p>Não há conta nem coleta de dados. Progresso, notas e ajustes ficam apenas neste aparelho. Use a função de backup para não perdê-los.</p>
+        <p>Não há conta nem coleta de dados. Progresso, notas e ajustes ficam apenas neste aparelho. Use a função de backup para não perdê-los. Os vídeos da página Vídeos são exibidos pelo player do YouTube e só são carregados quando você toca em Assistir; nesse momento o YouTube recebe a sua conexão, como em qualquer vídeo embutido.</p>
       </main>
     </>
   );
