@@ -13,6 +13,7 @@ Tudo que precisa ser colado no Play Console, na ordem em que a loja pede.
 | Categoria | **Livros e referência** |
 | Site | https://biblia-blush-nu.vercel.app |
 | Política de privacidade | https://biblia-blush-nu.vercel.app/privacidade.html |
+| Termos de Serviço (opcional) | https://biblia-blush-nu.vercel.app/termos.html |
 | E-mail de contato | o e-mail da sua conta de desenvolvedor |
 
 ## Descrição curta (até 80 caracteres)
@@ -78,6 +79,9 @@ Baixe o Farol de Fé e deixe a Palavra iluminar o seu caminho.
 ## Classificação de conteúdo
 - Categoria do questionário: **Referência, notícias ou educação** (ou "Outros", se a lista mudar).
 - Violência, sexo, linguagem imprópria, drogas, jogos de azar e compras: **Não**.
+- **Partilha de conteúdo entre usuários:** Não (compartilhar pelo menu do celular não conta).
+- **Conteúdo online** (conteúdo que não vem no app mas é acessado a partir dele): **Sim**. A página Vídeos exibe vídeos do próprio canal Farol de Fé no YouTube.
+- Promoção ou venda de produtos com restrição de idade: Não.
 - Conteúdo religioso é permitido; o texto da Bíblia contém narrativas históricas, sem conteúdo gráfico gerado pelo app.
 - Resultado esperado: **Livre / 3+** (a Google pode ajustar).
 
