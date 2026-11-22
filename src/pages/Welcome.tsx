@@ -7,7 +7,9 @@ import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
 import { PLAN_INFO, planStatus } from '../data/plans';
 import { upcomingOccurrences, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
-import { BookArt, ChurchArt, Dawn } from '../components/art';
+import { BookArt, ChurchArt, Dawn, LampArt } from '../components/art';
+import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
+import { dayOfYear } from '../lib/date';
 import { useInstall } from '../lib/install';
 import { Onboarding } from '../components/Onboarding';
 import { estimateMinutes } from '../lib/stats';
@@ -50,6 +52,8 @@ export default function Welcome() {
     studyMeta = parts.join(' · ');
   }
 
+  const dev = devotionalOfTheDay(dayOfYear(today));
+
   return (
     <div className="welcome">
       {!settings.onboarded ? <Onboarding /> : null}
@@ -87,6 +91,15 @@ export default function Welcome() {
             <h2>Estudos bíblicos{settings.lastArea === 'estudos' ? <span className="last-badge">última vez</span> : null}</h2>
             <p>Bíblia completa, planos e progresso</p>
             <span className="door-meta">{studyMeta}</span>
+            <span className="door-go">Entrar →</span>
+          </div>
+        </Link>
+        <Link to="/devocional" className="door">
+          <LampArt className="door-art" />
+          <div className="door-body">
+            <h2>Devocional{settings.lastArea === 'devocional' ? <span className="last-badge">última vez</span> : null}</h2>
+            <p>Uma palavra para o seu dia, com áudio</p>
+            <span className="door-meta">Hoje: {dev.title} · ~{devotionalMinutes(dev)} min</span>
             <span className="door-go">Entrar →</span>
           </div>
         </Link>

@@ -110,7 +110,7 @@ export default function More() {
           <div className="field">
             <span>Ao abrir o app</span>
             <Segmented<StartArea> value={settings.startArea} onChange={(v) => void setSetting('startArea', v)}
-              options={[{ value: 'ask', label: 'Perguntar' }, { value: 'igreja', label: 'Igreja' }, { value: 'estudos', label: 'Estudos' }]} />
+              options={[{ value: 'ask', label: 'Perguntar' }, { value: 'igreja', label: 'Igreja' }, { value: 'estudos', label: 'Estudos' }, { value: 'devocional', label: 'Devocional' }]} />
             <small className="muted">“Início” na barra da Igreja sempre volta para a tela de escolha.</small>
           </div>
           <button className="btn ghost" onClick={() => void setSetting('onboarded', false).then(() => nav('/'))}>Rever o guia inicial</button>

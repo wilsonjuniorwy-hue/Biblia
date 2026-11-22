@@ -21,7 +21,7 @@ export function PageHeader({ title, sub, back, right }: { title: string; sub?: s
   );
 }
 
-export type Area = 'igreja' | 'estudos';
+export type Area = 'igreja' | 'estudos' | 'devocional';
 
 const STUDY_TABS: [string, string, string][] = [
   ['/estudos', 'Hoje', 'sun'],
@@ -29,6 +29,12 @@ const STUDY_TABS: [string, string, string][] = [
   ['/plano', 'Plano', 'calendar'],
   ['/progresso', 'Progresso', 'chart'],
   ['/mais', 'Mais', 'menu'],
+];
+const DEVO_TABS: [string, string, string][] = [
+  ['/devocional', 'Devocional', 'sun'],
+  ['/biblia', 'Bíblia', 'book'],
+  ['/salvos', 'Meu conteúdo', 'heart'],
+  ['/', 'Início', 'home'],
 ];
 const CHURCH_TABS: [string, string, string][] = [
   ['/igreja', 'Igreja', 'church'],
@@ -41,11 +47,12 @@ export function TabBar({ area }: { area: Area }) {
   const { pathname } = useLocation();
   const inMore = pathname.startsWith('/mais') || pathname.startsWith('/salvos') || pathname.startsWith('/sobre');
   const inBible = pathname.startsWith('/biblia') || pathname.startsWith('/topicos') || pathname.startsWith('/buscar');
-  const items = area === 'igreja' ? CHURCH_TABS : STUDY_TABS;
+  const items = area === 'igreja' ? CHURCH_TABS : area === 'devocional' ? DEVO_TABS : STUDY_TABS;
   const isActive = (to: string) => {
     if (to === '/biblia') return inBible;
     if (to === '/mais') return inMore;
     if (to === '/salvos') return pathname.startsWith('/salvos');
+    if (to === '/devocional') return pathname.startsWith('/devocional');
     return pathname === to;
   };
   return (

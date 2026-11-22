@@ -57,7 +57,7 @@ export default function DevotionalPage() {
 
   return (
     <>
-      <PageHeader title="Devocional" back="/estudos" sub={formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' })} />
+      <PageHeader title="Devocional" back="/devocional" sub={formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' })} />
       <main className="page devotional">
         <section className="card hero">
           <small className="eyebrow">Devocional de hoje · ~{devotionalMinutes(dev)} min</small>

@@ -52,6 +52,10 @@ describe('configurações', () => {
     expect(s).toMatchObject({ readerFont: 'serif', lineHeight: 'normal', textWidth: 'normal', startArea: 'ask', lastArea: 'igreja', compare: false, weeklyGoal: 7, onboarded: true });
     expect(S({ weeklyGoal: 0 }).weeklyGoal).toBe(1);
   });
+  it('aceita a área Devocional na abertura e na última área', () => {
+    const s = S({ startArea: 'devocional', lastArea: 'devocional' });
+    expect(s).toMatchObject({ startArea: 'devocional', lastArea: 'devocional' });
+  });
   it('NaN e Infinity não passam', () => {
     expect(S({ fontSize: NaN }).fontSize).toBe(DEFAULTS.fontSize);
     expect(S({ fontSize: Infinity }).fontSize).toBe(DEFAULTS.fontSize);

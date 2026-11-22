@@ -34,7 +34,7 @@ export type Theme = 'auto' | 'light' | 'dark' | 'sepia';
 export type ReaderFont = 'serif' | 'sans';
 export type LineHeight = 'compact' | 'normal' | 'wide';
 export type TextWidth = 'narrow' | 'normal' | 'wide';
-export type StartArea = 'ask' | 'igreja' | 'estudos';
+export type StartArea = 'ask' | 'igreja' | 'estudos' | 'devocional';
 export interface Settings {
   translation: TranslationId;
   fontSize: number;
@@ -53,7 +53,7 @@ export interface Settings {
   compare: boolean;
   /** Para onde o app abre. */
   startArea: StartArea;
-  lastArea: 'igreja' | 'estudos' | null;
+  lastArea: 'igreja' | 'estudos' | 'devocional' | null;
   /** Meta de dias de leitura por semana. */
   weeklyGoal: number;
   onboarded: boolean;

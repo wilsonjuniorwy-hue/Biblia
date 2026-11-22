@@ -165,7 +165,7 @@ function DevotionalCard() {
   const { today } = useApp();
   const dev = devotionalOfTheDay(dayOfYear(today));
   return (
-    <Link to="/devocional" className="card row gap center-y link-card devo-card">
+    <Link to="/devocional/hoje" className="card row gap center-y link-card devo-card">
       <div className="grow">
         <small className="eyebrow">Devocional de hoje · ~{devotionalMinutes(dev)} min · com áudio</small>
         <h3>{dev.title}</h3>

@@ -212,7 +212,8 @@ mark { background: var(--hl-yellow); color: inherit; border-radius: 3px; padding
 .hero-copy blockquote { margin: 4px 0 0; font: italic 17px/1.55 var(--serif); max-width: 36ch; text-shadow: 0 1px 8px rgba(0, 0, 0, .45); }
 .hero-copy cite { display: block; margin-top: 6px; font: 600 12px var(--sans); font-style: normal; letter-spacing: .06em; color: #ffd27a; }
 .doors { width: 100%; max-width: 720px; margin: -22px auto 0; padding: 0 16px; display: grid; gap: 14px; position: relative; }
-@media (min-width: 640px) { .doors { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 640px) { .doors { grid-template-columns: 1fr 1fr; } .door:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@media (min-width: 960px) { .doors { max-width: 1000px; grid-template-columns: repeat(3, 1fr); } .door:last-child:nth-child(odd) { grid-column: auto; } }
 .door { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; overflow: hidden; box-shadow: 0 8px 28px rgba(20, 33, 61, .14); transition: transform .15s; }
 .door:hover { transform: translateY(-2px); }
 .door-art { display: block; width: 100%; aspect-ratio: 5 / 3; height: auto; }
@@ -362,3 +363,7 @@ html { touch-action: manipulation; }
 .rate button { border: 0; background: transparent; color: var(--on-primary); padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; min-height: 36px; }
 .rate button.on { background: var(--accent); color: #14213d; }
 .devo-card .devo-play { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #14213d; flex: none; }
+
+.devo-hero { text-decoration: none; }
+.devo-hero h2 { font: 700 24px var(--serif); }
+.soon { border-style: dashed; box-shadow: none; }

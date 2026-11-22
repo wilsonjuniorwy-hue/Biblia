@@ -15,6 +15,7 @@ import SearchPage from './pages/Search';
 import TopicPage from './pages/Topic';
 import More from './pages/More';
 import DevotionalPage from './pages/Devotional';
+import DevotionalHub from './pages/DevotionalHub';
 import { About, Saved } from './pages/Saved';
 
 function Shell() {
@@ -25,11 +26,12 @@ function Shell() {
 
   // Área atual (Igreja ou Estudos): define a barra de abas nas telas compartilhadas, como a Bíblia.
   const [area, setArea] = useState<Area>(() => {
-    try { return sessionStorage.getItem('area') === 'igreja' ? 'igreja' : 'estudos'; } catch { return 'estudos'; }
+    try { const a = sessionStorage.getItem('area'); return a === 'igreja' || a === 'devocional' ? a : 'estudos'; } catch { return 'estudos'; }
   });
   useEffect(() => {
     const next: Area | null = pathname.startsWith('/igreja') ? 'igreja'
-      : ['/estudos', '/plano', '/progresso', '/mais', '/devocional'].some((p) => pathname.startsWith(p)) ? 'estudos' : null;
+      : pathname.startsWith('/devocional') ? 'devocional'
+      : ['/estudos', '/plano', '/progresso', '/mais'].some((p) => pathname.startsWith(p)) ? 'estudos' : null;
     if (next && next !== area) {
       setArea(next);
       try { sessionStorage.setItem('area', next); } catch { /* ignora */ }
@@ -56,7 +58,7 @@ function Shell() {
     started.current = true;
     let first = true;
     try { first = sessionStorage.getItem('startHandled') === null; sessionStorage.setItem('startHandled', '1'); } catch { /* ignora */ }
-    if (first && pathname === '/' && settings.startArea !== 'ask') nav(settings.startArea === 'igreja' ? '/igreja' : '/estudos', { replace: true });
+    if (first && pathname === '/' && settings.startArea !== 'ask') nav(settings.startArea === 'igreja' ? '/igreja' : settings.startArea === 'devocional' ? '/devocional' : '/estudos', { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
@@ -100,7 +102,8 @@ export default function App() {
             <Route path="biblia" element={<Bible />} />
             <Route path="biblia/:book" element={<BookPage />} />
             <Route path="ler/:book/:chapter" element={<Reader />} />
-            <Route path="devocional" element={<DevotionalPage />} />
+            <Route path="devocional" element={<DevotionalHub />} />
+            <Route path="devocional/hoje" element={<DevotionalPage />} />
             <Route path="plano" element={<PlanPage />} />
             <Route path="progresso" element={<ProgressPage />} />
             <Route path="buscar" element={<SearchPage />} />

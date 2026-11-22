@@ -94,8 +94,8 @@ export function sanitizeSettings(raw: Record<string, unknown>, defaults: Setting
   s.readerFont = oneOf(raw.readerFont, ['serif', 'sans'], defaults.readerFont);
   s.lineHeight = oneOf(raw.lineHeight, ['compact', 'normal', 'wide'], defaults.lineHeight);
   s.textWidth = oneOf(raw.textWidth, ['narrow', 'normal', 'wide'], defaults.textWidth);
-  s.startArea = oneOf(raw.startArea, ['ask', 'igreja', 'estudos'], defaults.startArea);
-  s.lastArea = raw.lastArea === 'igreja' || raw.lastArea === 'estudos' ? raw.lastArea : null;
+  s.startArea = oneOf(raw.startArea, ['ask', 'igreja', 'estudos', 'devocional'], defaults.startArea);
+  s.lastArea = raw.lastArea === 'igreja' || raw.lastArea === 'estudos' || raw.lastArea === 'devocional' ? raw.lastArea : null;
   if (typeof raw.compare === 'boolean') s.compare = raw.compare;
   if (typeof raw.onboarded === 'boolean') s.onboarded = raw.onboarded;
   if (isInt(raw.weeklyGoal)) s.weeklyGoal = Math.min(7, Math.max(1, raw.weeklyGoal));

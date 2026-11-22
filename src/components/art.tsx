@@ -115,3 +115,33 @@ export function BookArt({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/** Lamparina acesa à noite (devocional). */
+export function LampArt({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden focusable="false">
+      <defs>
+        <linearGradient id="lamp-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#120f33" />
+          <stop offset=".6" stopColor="#3a2f6b" />
+          <stop offset="1" stopColor="#c8743a" />
+        </linearGradient>
+        <radialGradient id="lamp-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="#fff1c2" stopOpacity=".95" />
+          <stop offset="1" stopColor="#ffb84d" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="400" height="240" fill="url(#lamp-sky)" />
+      {stars([[40, 34, 1.4], [96, 70, 1], [310, 30, 1.5], [356, 76, 1.1], [250, 22, 1], [150, 28, 1.2]])}
+      <circle cx="200" cy="128" r="110" fill="url(#lamp-glow)" />
+      <path d="M0 200 C90 186 160 198 230 196 C300 194 350 184 400 192 L400 240 L0 240Z" fill="#241d4a" />
+      <g fill="#0e0b26">
+        <path d="M150 196 C150 176 170 166 200 166 C236 166 262 176 262 196Z" />
+        <path d="M258 182 C280 178 292 168 290 160 C288 170 276 174 258 176Z" />
+        <rect x="170" y="190" width="70" height="8" rx="3" />
+      </g>
+      <path d="M200 98 C214 116 222 126 214 142 C210 150 190 150 186 142 C178 126 192 116 200 98Z" fill="#ffb84d" />
+      <path d="M200 120 C207 130 208 138 203 144 C199 148 194 146 193 141 C192 134 197 130 200 120Z" fill="#fff6dc" />
+    </svg>
+  );
+}
