@@ -2,7 +2,7 @@ export type TranslationId = 'tb' | 'arc';
 export interface Translation { id: TranslationId; short: string; name: string; note: string }
 
 export const TRANSLATIONS: Translation[] = [
-  { id: 'tb', short: 'TB', name: 'Tradução Brasileira', note: 'Linguagem clara, ortografia atual.' },
+  { id: 'tb', short: 'TB', name: 'Tradução Brasileira', note: 'Linguagem clara, ortografia atual. Trechos entre [colchetes] não constam nos manuscritos mais antigos.' },
   { id: 'arc', short: 'ARC', name: 'Almeida Revista e Corrigida (1911)', note: 'Texto clássico, ortografia da época.' },
 ];
 export const translationById = (id: string) => TRANSLATIONS.find((t) => t.id === id) ?? TRANSLATIONS[0];

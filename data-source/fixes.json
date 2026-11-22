@@ -1,0 +1,29 @@
+{
+  "_comment": "Correções aplicadas por scripts/build-bible.mjs sobre os textos de origem (damarals/biblias). replace: [tradução, livro, capítulo, versículo, trecho errado, trecho certo]. split: divide um versículo em dois no trecho indicado. merge: junta o versículo com o seguinte. Ordem: replace, split, merge (com a numeração original da fonte).",
+  "replace": [
+    ["arc", "Gn", 14, 7, "Lepois", "Depois"],
+    ["arc", "Êx", 4, 16, "aconlecerá", "acontecerá"],
+    ["arc", "Êx", 16, 7, "ámandã", "ámanhã"],
+    ["arc", "Êx", 32, 2, "trazeim", "trazei"],
+    ["arc", "Gn", 43, 23, "thesoiro", "thesouro"],
+    ["arc", "Gn", 28, 4, "abenção", "benção"],
+    ["arc", "Gn", 48, 16, "abençôe", "abençoe"],
+    ["arc", "Dt", 29, 19, "abençôe", "abençoe"],
+    ["arc", "Ap", 20, 14, "e o , inferno", "e o inferno"],
+    ["arc", "Nm", 33, 51, "passado ; o Jordão", "passado o Jordão"],
+    ["arc", "Gn", 44, 34, "meu pae. ,", "meu pae."],
+    ["arc", "Js", 15, 35, "Socho,e", "Socho, e"],
+    ["arc", "Jó", 30, 2, "mãos?já", "mãos? já"],
+    ["arc", "Rm", 3, 9, "!Pois que?", "Pois que?"],
+    ["tb", "Gn", 27, 19, "abençõe", "abençoe"],
+    ["tb", "Js", 17, 3, "somete", "somente"],
+    ["tb", "1Sm", 11, 13, "a Israel , .", "a Israel."]
+  ],
+  "split": [
+    ["arc", "1Rs", 22, 53, "Israel. E serviu"],
+    ["tb", "Jó", 42, 16, "quatro gerações. Assim"]
+  ],
+  "merge": [
+    ["arc", "1Rs", 22, 43]
+  ]
+}
