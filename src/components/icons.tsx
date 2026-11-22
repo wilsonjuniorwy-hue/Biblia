@@ -32,7 +32,12 @@ const P: Record<string, ReactNode> = {
   chevronR: <path d="M9 6l6 6-6 6" />,
   info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5v.5" /></>,
   plus: <path d="M12 5v14M5 12h14" />,
+  lighthouse: <><path d="M9 21l1-11h4l1 11" /><path d="M7 21h10" /><rect x="10" y="6" width="4" height="4" /><path d="M10 6l2-3 2 3" /><path d="M7 7L3 6M7 9l-4 1M17 7l4-1M17 9l4 1" /></>,
+  grid: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></>,
+  gear: <><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" /></>,
+  list: <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />,
   note: <><path d="M5 3h14v18l-4-3-3 3-3-3-4 3z" /><path d="M9 8h6M9 12h6" /></>,
+  music: <><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></>,
 };
 
 export type IconName = keyof typeof P;

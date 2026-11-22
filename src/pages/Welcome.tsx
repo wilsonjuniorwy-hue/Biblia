@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { useEvents } from '../db/db';
 import { loadBook, translationById } from '../data/bible';
@@ -7,7 +7,8 @@ import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
 import { PLAN_INFO, planStatus } from '../data/plans';
 import { upcomingOccurrences, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
-import { BookArt, ChurchArt, Dawn, FarolArt } from '../components/art';
+import { Dawn } from '../components/art';
+import { Icon } from '../components/icons';
 import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
 import { welcomeVerseOfTheDay } from '../data/welcomeVerses';
 import { refLabel } from '../data/topics';
@@ -23,6 +24,8 @@ function greeting(h: number) {
 export default function Welcome() {
   const { settings, read, today, streak } = useApp();
   const inst = useInstall();
+  const nav = useNavigate();
+  const [q, setQ] = useState('');
   const now = new Date();
   const nowHM = now.toTimeString().slice(0, 5);
   const { events } = useEvents();
@@ -78,36 +81,34 @@ export default function Welcome() {
         </div>
       </header>
 
-      <main className="doors" aria-label="Escolha por onde começar">
-        <Link to="/igreja" className="door">
-          <ChurchArt className="door-art" />
-          <div className="door-body">
-            <h2>Igreja{settings.lastArea === 'igreja' ? <span className="last-badge">última vez</span> : null}</h2>
-            <p>Seus eventos e a Bíblia</p>
-            <span className="door-meta">
-              {next ? `Próximo: ${next.event.title}, ${whenLabel(next.offset, next.date)}${next.event.time ? ` às ${next.event.time}` : ''}` : 'Cadastre seus cultos e compromissos'}
-            </span>
-            <span className="door-go">Entrar →</span>
-          </div>
-        </Link>
+      <form className="home-search" role="search" onSubmit={(e) => { e.preventDefault(); nav(q.trim() ? `/buscar?q=${encodeURIComponent(q.trim())}` : '/buscar'); }}>
+        <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Pesquise por palavra ou versículo" aria-label="Buscar na Bíblia" enterKeyHint="search" />
+        <button type="submit" aria-label="Buscar"><Icon name="search" size={22} /></button>
+      </form>
 
-        <Link to="/estudos" className="door">
-          <BookArt className="door-art" />
-          <div className="door-body">
-            <h2>Estudos bíblicos{settings.lastArea === 'estudos' ? <span className="last-badge">última vez</span> : null}</h2>
-            <p>Bíblia completa, planos e progresso</p>
-            <span className="door-meta">{studyMeta}</span>
-            <span className="door-go">Entrar →</span>
-          </div>
+      <main className="tiles" aria-label="Escolha por onde começar">
+        <Link to="/igreja" className="tile t-church">
+          <Icon name="church" size={38} className="tile-icon" />
+          <h2>Igreja</h2>
+          <span className="tile-meta">{next ? `${next.event.title}, ${whenLabel(next.offset, next.date)}${next.event.time ? ` às ${next.event.time}` : ''}` : 'Seus eventos e a Bíblia'}</span>
+          {settings.lastArea === 'igreja' ? <span className="last-badge">última vez</span> : null}
         </Link>
-        <Link to="/devocional" className="door">
-          <FarolArt className="door-art" />
-          <div className="door-body">
-            <h2>Devocional{settings.lastArea === 'devocional' ? <span className="last-badge">última vez</span> : null}</h2>
-            <p>Uma palavra para o seu dia, com áudio</p>
-            <span className="door-meta">Hoje: {dev.title} · ~{devotionalMinutes(dev)} min</span>
-            <span className="door-go">Entrar →</span>
-          </div>
+        <Link to="/estudos" className="tile t-study">
+          <Icon name="book" size={38} className="tile-icon" />
+          <h2>Estudos</h2>
+          <span className="tile-meta">{studyMeta}</span>
+          {settings.lastArea === 'estudos' ? <span className="last-badge">última vez</span> : null}
+        </Link>
+        <Link to="/devocional" className="tile t-devo">
+          <Icon name="lighthouse" size={38} className="tile-icon" />
+          <h2>Devocional</h2>
+          <span className="tile-meta">{dev.title} · ~{devotionalMinutes(dev)} min</span>
+          {settings.lastArea === 'devocional' ? <span className="last-badge">última vez</span> : null}
+        </Link>
+        <Link to="/menu" className="tile t-more">
+          <Icon name="grid" size={38} className="tile-icon" />
+          <h2>Mais</h2>
+          <span className="tile-meta">Plano, tópicos, busca e ajustes</span>
         </Link>
       </main>
 
