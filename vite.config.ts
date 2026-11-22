@@ -42,6 +42,16 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: { cacheName: 'bible-text', expiration: { maxEntries: 200 } },
           },
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/audio/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'devotional-audio',
+              expiration: { maxEntries: 120, maxAgeSeconds: 30 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+              rangeRequests: true,
+            },
+          },
         ],
       },
     }),

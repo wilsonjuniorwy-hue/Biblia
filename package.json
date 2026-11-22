@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "data": "node scripts/build-bible.mjs",
-    "icons": "node scripts/gen-icons.mjs"
+    "icons": "node scripts/gen-icons.mjs",
+    "audio": "node --experimental-strip-types scripts/build-devotional-audio.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.7",

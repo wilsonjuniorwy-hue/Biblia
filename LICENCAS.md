@@ -23,3 +23,20 @@ Mais › Licenças e créditos do app e deve ser mantida.
 A "ARC 1995" da SBB **não** é a mesma coisa que a edição de 1911 usada aqui.
 
 Antes de publicar, vale confirmar a situação de cada texto com a fonte original.
+
+## Áudios dos devocionais e música de fundo
+
+### Narração dos devocionais
+- **Voz neural:** Leitura sintetizada com voz feminina suave e empática em português do Brasil (`pt-BR-ThalitaMultilingualNeural`), gerada com o Microsoft Edge TTS (provedor `edge` do script) para os devocionais originais do aplicativo.
+
+### Trilhas musicais instrumentais de fundo
+- **Faixas:**
+  - *Quiet Devotion* (instrumental suave em piano/cordas ambient)
+  - *Quiet Contemplation* (instrumental meditativo em piano)
+  - *Devem ser assim* (instrumental calmo para reflexão)
+- **Autor / Criação:** Wagner Junior (wagner1junior1) via Suno AI.
+- **Licença:** Criação original instrumental com direitos comerciais liberados para uso integrado no aplicativo Farol de Fé.
+
+### Pendências antes de publicar na Play Store
+- **Voz:** os áudios atuais foram gerados com o provedor `edge` (edge-tts, serviço de leitura do navegador Edge, sem chave). Para uso comercial, regerar com o **Microsoft Azure Speech oficial** (`TTS_PROVIDER=azure`, com chave no `.env`) e conferir os termos do serviço.
+- **Música:** as faixas foram criadas no Suno. Confirmar que o plano usado na criação (pago) permitia uso comercial e guardar o comprovante.

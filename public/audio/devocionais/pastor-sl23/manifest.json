@@ -1,0 +1,125 @@
+{
+  "devotionalId": "pastor-sl23",
+  "title": "O Senhor é o meu Pastor",
+  "voice": "pt-BR-ThalitaMultilingualNeural",
+  "provider": "edge",
+  "rate": 0.86,
+  "common": {
+    "titulo": {
+      "file": "titulo.mp3",
+      "duration": 2.04
+    },
+    "leitura-intro": {
+      "file": "leitura-intro.mp3",
+      "duration": 4.2
+    },
+    "p0": {
+      "file": "p0.mp3",
+      "duration": 33
+    },
+    "p1": {
+      "file": "p1.mp3",
+      "duration": 36.41
+    },
+    "p2": {
+      "file": "p2.mp3",
+      "duration": 45.65
+    },
+    "p3": {
+      "file": "p3.mp3",
+      "duration": 26.33
+    },
+    "p4": {
+      "file": "p4.mp3",
+      "duration": 31.66
+    },
+    "pergunta": {
+      "file": "pergunta.mp3",
+      "duration": 9.53
+    },
+    "oracao": {
+      "file": "oracao.mp3",
+      "duration": 23.59
+    }
+  },
+  "translations": {
+    "blivre": {
+      "v1": {
+        "file": "blivre/v1.mp3",
+        "duration": 3.34
+      },
+      "v2": {
+        "file": "blivre/v2.mp3",
+        "duration": 4.97
+      },
+      "v3": {
+        "file": "blivre/v3.mp3",
+        "duration": 5.42
+      },
+      "v4": {
+        "file": "blivre/v4.mp3",
+        "duration": 9.6
+      },
+      "v5": {
+        "file": "blivre/v5.mp3",
+        "duration": 8.74
+      },
+      "v6": {
+        "file": "blivre/v6.mp3",
+        "duration": 9.07
+      }
+    },
+    "tb": {
+      "v1": {
+        "file": "tb/v1.mp3",
+        "duration": 3.65
+      },
+      "v2": {
+        "file": "tb/v2.mp3",
+        "duration": 5.86
+      },
+      "v3": {
+        "file": "tb/v3.mp3",
+        "duration": 6.12
+      },
+      "v4": {
+        "file": "tb/v4.mp3",
+        "duration": 10.06
+      },
+      "v5": {
+        "file": "tb/v5.mp3",
+        "duration": 8.62
+      },
+      "v6": {
+        "file": "tb/v6.mp3",
+        "duration": 9.07
+      }
+    },
+    "arc": {
+      "v1": {
+        "file": "arc/v1.mp3",
+        "duration": 3.62
+      },
+      "v2": {
+        "file": "arc/v2.mp3",
+        "duration": 5.74
+      },
+      "v3": {
+        "file": "arc/v3.mp3",
+        "duration": 6.1
+      },
+      "v4": {
+        "file": "arc/v4.mp3",
+        "duration": 9.58
+      },
+      "v5": {
+        "file": "arc/v5.mp3",
+        "duration": 8.26
+      },
+      "v6": {
+        "file": "arc/v6.mp3",
+        "duration": 9.26
+      }
+    }
+  }
+}

@@ -76,6 +76,8 @@ export function About() {
         <p>Os textos da TB e da ARC foram obtidos do projeto de código aberto <em>damarals/biblias</em> (licença MIT para o conjunto de dados). Os textos modernos protegidos (NVI, NAA, NTLH, ARA e outros) não são utilizados.</p>
         <h3>Tópicos e planos</h3>
         <p>As seleções de versículos por tema e os planos de leitura (sequencial, cronológico e misto) foram montados para este app. A ordem cronológica é aproximada: estudiosos divergem sobre a datação de alguns livros.</p>
+        <h3>Áudios dos devocionais e música</h3>
+        <p>A narração do devocional utiliza voz neural feminina suave em português do Brasil. O fundo musical instrumental conta com as faixas <em>Quiet Devotion</em>, <em>Quiet Contemplation</em> e <em>Devem ser assim</em>, criadas por Wagner Junior e autorizadas para uso no aplicativo.</p>
         <h3>Privacidade</h3>
         <p>Não há conta nem coleta de dados. Progresso, notas e ajustes ficam apenas neste aparelho. Use a função de backup para não perdê-los.</p>
       </main>
