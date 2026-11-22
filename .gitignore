@@ -5,3 +5,8 @@ dist
 .env*
 .claude
 *.tsbuildinfo
+
+# Músicas-fonte e amostras de áudio (só vão ao repositório as usadas em public/audio)
+musica fundo devocional/
+amostra-*.mp3
+demonstracao-*.mp3
