@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { translationById } from '../data/bible';
-import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
+import { devotionalById, devotionalMinutes, devotionalOfTheDay, devotionalThemeName } from '../data/devotionals';
 import { refLabel } from '../data/topics';
 import { Icon } from '../components/icons';
 import { PageHeader, Skeleton } from '../components/ui';
@@ -16,7 +16,11 @@ type Part = { id: string; text: string };
 
 export default function DevotionalPage() {
   const { settings, today, toast } = useApp();
-  const dev = devotionalOfTheDay(dayOfYear(today));
+  // /devocional/hoje mostra o do dia; /devocional/<id> abre um da biblioteca
+  const { id } = useParams();
+  const todays = devotionalOfTheDay(dayOfYear(today));
+  const dev = (id && id !== 'hoje' ? devotionalById(id) : undefined) ?? todays;
+  const isToday = dev.id === todays.id;
   const tr = settings.translation;
   const { data: verses, error, loading } = useChapter(tr, dev.ref.book, dev.ref.chapter);
 
@@ -55,10 +59,10 @@ export default function DevotionalPage() {
 
   return (
     <>
-      <PageHeader title="Devocional" back="/devocional" sub={formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' })} />
+      <PageHeader title="Devocional" back="/devocional" sub={isToday ? formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' }) : devotionalThemeName(dev)} />
       <main className="page devotional">
         <section className="card hero">
-          <small className="eyebrow">Devocional de hoje · ~{devotionalMinutes(dev)} min</small>
+          <small className="eyebrow">{isToday ? 'Devocional de hoje' : 'Devocional'} · ~{devotionalMinutes(dev)} min</small>
           <h2 className={cls('titulo')}>{dev.title}</h2>
           {audio.supported ? (
             <>

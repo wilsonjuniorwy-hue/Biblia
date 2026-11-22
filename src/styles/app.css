@@ -408,3 +408,24 @@ a.card.hero { text-decoration: none; }
 .video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
 .video-frame.short { width: min(100%, calc(60dvh * 9 / 16)); aspect-ratio: 9 / 16; margin: 0 auto; }
 .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* Biblioteca de devocionais (pastas) */
+.lib-title { font: 700 20px var(--serif); margin: 8px 0 0; }
+.folder { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.folder summary { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; list-style: none; font: 700 16px var(--sans); }
+.folder summary::-webkit-details-marker { display: none; }
+.folder summary::after { content: '›'; margin-left: 8px; font-size: 22px; color: var(--muted); transition: transform .15s; }
+.folder[open] summary::after { transform: rotate(90deg); }
+.folder-icon { color: var(--accent-text, var(--accent)); }
+.folder-name { flex: 1; }
+.folder-count { font: 700 12px var(--sans); color: var(--muted); background: var(--surface2); border-radius: 999px; padding: 2px 9px; }
+.devo-list { list-style: none; margin: 0; padding: 0 8px 8px; display: flex; flex-direction: column; gap: 2px; }
+.devo-item { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 12px; color: var(--text); }
+.devo-item:hover { background: var(--surface2); }
+.devo-num { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--surface2); font: 700 14px var(--sans); color: var(--accent-text, var(--accent)); }
+.devo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.devo-info strong { font: 600 16px/1.3 var(--sans); }
+.folder-name { display: flex; flex-direction: column; gap: 1px; }
+.folder-name small { font: 400 13px/1.3 var(--sans); }
+.folder.soon-folder { opacity: .78; box-shadow: none; border-style: dashed; }
+.folder-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }

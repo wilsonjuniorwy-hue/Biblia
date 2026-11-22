@@ -11,17 +11,42 @@ export interface Devotional {
   ref: VerseRef;
   /** Reflexão, um parágrafo por item. */
   paragraphs: string[];
+  /** Tema (pasta da biblioteca): id de um item de DEVOTIONAL_THEMES. */
+  theme: string;
   /** Pergunta para pensar ao longo do dia. */
   question: string;
   /** Oração final. */
   prayer: string;
 }
 
+/**
+ * Temas da biblioteca, na ordem em que aparecem. `planned` é o roteiro do que ainda vamos escrever
+ * (passagens no formato "Sl 37:5"); quando um devocional é escrito, ele entra em DEVOTIONALS com o id do tema.
+ * Um tema sem devocionais aparece como "Em breve".
+ */
+export interface DevotionalTheme { id: string; name: string; blurb: string; planned: string[] }
+
+export const DEVOTIONAL_THEMES: DevotionalTheme[] = [
+  { id: 'confianca', name: 'Confiança', blurb: 'Entregar a Deus o que pesa e descansar no cuidado dele.',
+    planned: ['Sl 37:5', 'Sl 56:3', 'Pv 16:3', 'Sl 28:7', 'Jr 17:7-8', 'Na 1:7', 'Sl 20:7'] },
+  { id: 'paz', name: 'Descanso e paz', blurb: 'Para o coração cansado e a mente que não para.',
+    planned: ['Mt 11:28-29', 'Sl 4:8', 'Jo 14:27', 'Sl 62:1', 'Mc 4:39', 'Sl 91:1-2', 'Is 26:3'] },
+  { id: 'esperanca', name: 'Esperança na prova', blurb: 'Quando o caminho está difícil e a resposta demora.',
+    planned: ['Hc 3:17-18', 'Rm 8:28', 'Gn 50:20', 'Jr 29:11', 'Is 43:19', 'Sl 40:2-3', 'Tg 1:2-4', '2Co 4:16-18'] },
+  { id: 'familia', name: 'Família e coragem', blurb: 'O lar nas mãos de Deus e a coragem de seguir em frente.',
+    planned: ['Js 24:15', 'Sl 127:1', 'Js 1:9', 'Fp 4:19', 'Sl 37:25', 'Dt 31:6', 'Pv 22:6'] },
+  { id: 'amor', name: 'O amor de Deus', blurb: 'Saber-se amado, perdoado e cuidado.',
+    planned: ['Jr 31:3', 'Rm 8:38-39', '1Jo 4:19', 'Jo 3:16', 'Sl 103:8', 'Lm 3:22-23', 'Rm 5:8'] },
+  { id: 'luz', name: 'Luz e propósito', blurb: 'Caminhar na luz da Palavra e ser luz para os outros.',
+    planned: ['Sl 119:105', 'Mt 5:14-16', 'Jo 8:12', 'Is 60:1', 'Ef 5:8', 'Fp 2:15'] },
+];
+
 export const DEVOTIONALS: Devotional[] = [
   {
     id: 'pastor-sl23',
     title: 'O Senhor é o meu Pastor',
     ref: { book: 18, chapter: 23, from: 1, to: 6 },
+    theme: 'confianca',
     paragraphs: [
       'Davi conhecia de perto o ofício de pastor. Antes de ser rei, passou anos no campo cuidando de ovelhas, e quem faz isso aprende rápido como elas são: frágeis, assustadiças, incapazes de achar água sozinhas ou de se defender de um lobo. Uma ovelha depende por inteiro de quem a conduz. Quando Davi escreve “O Senhor é o meu pastor”, ele não está se elogiando. Está admitindo, sem vergonha, que precisa de cuidado, e dizendo em quem confia para recebê-lo.',
       'A frase seguinte, “nada me faltará”, merece cuidado. Ela não promete uma vida sem dificuldades, nem que teremos tudo o que desejamos. Diz algo mais profundo: debaixo do cuidado do Pastor, nada de essencial nos será negado. Os pastos verdes e as águas quietas falam de descanso e de provisão. E repare quem faz o quê: é o Pastor quem faz a ovelha deitar, quem a leva, quem a guia. Muitas vezes não sabemos parar sozinhos. Há descansos que não são preguiça, são presentes de Deus.',
@@ -36,6 +61,7 @@ export const DEVOTIONALS: Devotional[] = [
     id: 'socorro-sl121',
     title: 'De onde vem o meu socorro?',
     ref: parseVerseRef('Sl 121:1-2'),
+    theme: 'confianca',
     paragraphs: [
       'Imagine uma família a caminho de Jerusalém, há mais de dois mil anos. A estrada sobe por montanhas, o sol castiga, o cansaço pesa e há perigos no caminho. Os Salmos 120 a 134 são chamados de cânticos de subida: eram cantados pelos peregrinos enquanto subiam rumo ao templo. O Salmo 121 é um deles, e começa com um gesto simples e humano: alguém levanta os olhos para os montes e pergunta de onde virá o seu socorro.',
       'Repare na honestidade dessa pergunta. O salmista não finge que está forte, nem diz que se vira sozinho. Ele reconhece que precisa de ajuda, e esse é muitas vezes o primeiro passo para recebê-la. Em muitos lugares daquele tempo, os montes eram ainda associados aos altares de deuses falsos, então a pergunta pode também ser lida assim: em quem eu vou confiar quando a subida ficar difícil? Será que a ajuda vem do que parece alto, grande e impressionante?',
@@ -51,6 +77,7 @@ export const DEVOTIONALS: Devotional[] = [
     id: 'paz-fp4',
     title: 'A paz que guarda o coração',
     ref: parseVerseRef('Fp 4:6-7'),
+    theme: 'confianca',
     paragraphs: [
       'O apóstolo Paulo escreveu a carta aos Filipenses estando preso. Ele não estava em um lugar confortável, não sabia como terminaria o seu julgamento e, mesmo assim, a carta inteira respira alegria e confiança. É dessa cela que sai o convite que lemos hoje: não andem ansiosos por coisa alguma. Quem fala assim não está num lugar fácil. Fala de quem aprendeu um caminho para atravessar a preocupação sem ser engolido por ela.',
       'Vale notar o que o texto não diz. Ele não afirma que você não vai sentir ansiedade, nem manda se envergonhar por senti-la. O que ele faz é indicar o que fazer com ela: levar a Deus. E aponta três movimentos. O primeiro é a oração, que é simplesmente conversar com Deus. O segundo é a súplica, que é pedir com clareza, dizendo a Deus o que realmente pesa, sem versão arrumada. O terceiro é a ação de graças, que é lembrar o que Deus já fez.',
@@ -66,6 +93,7 @@ export const DEVOTIONALS: Devotional[] = [
     id: 'aves-mt6',
     title: 'Olhai as aves do céu',
     ref: parseVerseRef('Mt 6:26'),
+    theme: 'confianca',
     paragraphs: [
       'Jesus ensinava ao ar livre, e muita gente que o ouvia vivia com a preocupação de todos os dias: o que vamos comer, como vamos nos vestir, se vai dar para chegar ao fim do mês. Eram pessoas simples, muitas delas pobres. Foi para elas que Ele disse algo que até hoje soa estranho e bonito: olhem para as aves do céu. Ele escolhe um exemplo que está ao alcance dos olhos, porque a lição não precisa de livro, basta levantar a cabeça.',
       'Cuidado com uma leitura apressada. Jesus não está dizendo que ninguém deve trabalhar nem planejar. As aves não ficam paradas esperando que a comida caia no ninho: passam o dia procurando, voando, cuidando dos filhotes. O que Jesus aponta é outra coisa. A ave faz a sua parte, mas não carrega a angústia de quem acha que tudo depende só dela. Trabalhar é uma coisa, viver consumido pela preocupação é outra.',
@@ -81,6 +109,7 @@ export const DEVOTIONALS: Devotional[] = [
     id: 'nao-temas-is41',
     title: 'Não temas, eu estou contigo',
     ref: parseVerseRef('Is 41:10'),
+    theme: 'confianca',
     paragraphs: [
       'A mensagem do profeta Isaías foi dada a um povo cansado e assustado. O povo de Israel enfrentava ameaças de nações poderosas e sentia que estava sozinho no meio da tempestade. É nesse cenário que Deus fala por meio do profeta uma frase que atravessou os séculos: não temas. A ordem não vem solta, como se bastasse ter força de vontade. Ela vem acompanhada de razões, e é isso que a faz tão forte.',
       'A primeira razão é uma promessa de presença: eu estou contigo. Antes de qualquer solução, Deus oferece companhia. O medo cresce na solidão, e a primeira resposta de Deus é lembrar que não estamos sozinhos. A segunda razão é a relação: eu sou o teu Deus. Ele não se apresenta como um estranho poderoso, mas como o Deus que tem um vínculo com cada um de nós. O medo diz que ninguém está cuidando; Deus responde que Ele está.',
@@ -96,6 +125,7 @@ export const DEVOTIONALS: Devotional[] = [
     id: 'confia-pv3',
     title: 'Confia de todo o coração',
     ref: parseVerseRef('Pv 3:5-6'),
+    theme: 'confianca',
     paragraphs: [
       'O livro de Provérbios é como o conselho de um pai a um filho, que quer prepará-lo para a vida. Entre tantos conselhos práticos sobre dinheiro, trabalho e palavras, há dois versículos que resumem o fundamento de tudo: confia no Senhor de todo o coração e não te apoies no teu próprio entendimento. Quem fala assim não quer que o filho deixe de pensar. Quer que ele saiba onde colocar o peso da vida.',
       'Repare em duas palavras. A primeira é todo. Confiar de todo o coração é diferente de confiar mais ou menos, ou de confiar só quando as coisas estão boas. É fácil dizer que confiamos em Deus quando o plano está dando certo. O desafio aparece quando o caminho muda, quando as contas não fecham ou quando a resposta demora. Confiança de verdade é a que continua firme quando não dá para entender.',
@@ -111,6 +141,7 @@ export const DEVOTIONALS: Devotional[] = [
     id: 'refugio-sl46',
     title: 'Deus é o nosso refúgio',
     ref: parseVerseRef('Sl 46:1'),
+    theme: 'confianca',
     paragraphs: [
       'O Salmo 46 foi escrito num tempo de grande agitação. O texto fala de terra que se move, montes que caem no mar, águas que rugem e nações em alvoroço. É um retrato de caos, daquelas fases em que parece que nada está no lugar. E é justamente no meio dessa cena que o salmista abre a boca para afirmar com calma: Deus é o nosso refúgio e a nossa fortaleza.',
       'Pense no que é um refúgio. É um lugar para onde você corre quando a tempestade chega, um abrigo onde você se protege. A palavra fortaleza reforça a ideia: um lugar firme que não cede com o vento. O salmista usa duas imagens parecidas para dizer que Deus é mais do que uma ideia agradável: Ele é um lugar real de segurança, para onde podemos ir quando a vida aperta.',
@@ -133,4 +164,14 @@ export function devotionalOfTheDay(dayIndex: number): Devotional {
 export function devotionalMinutes(d: Devotional): number {
   const words = [d.title, ...d.paragraphs, d.question, d.prayer].join(' ').split(/\s+/).length;
   return Math.max(1, Math.round(words / 180));
+}
+
+/** Busca um devocional pelo id (rota /devocional/:id). */
+export const devotionalById = (id: string): Devotional | undefined => DEVOTIONALS.find((d) => d.id === id);
+
+export const devotionalThemeName = (d: Devotional): string => DEVOTIONAL_THEMES.find((t) => t.id === d.theme)?.name ?? 'Devocional';
+
+/** Pastas da biblioteca: um por tema, na ordem de DEVOTIONAL_THEMES (inclusive os que ainda estão vazios). */
+export function devotionalFolders(): { theme: DevotionalTheme; items: Devotional[] }[] {
+  return DEVOTIONAL_THEMES.map((theme) => ({ theme, items: DEVOTIONALS.filter((d) => d.theme === theme.id) }));
 }

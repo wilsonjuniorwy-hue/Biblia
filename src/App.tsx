@@ -105,7 +105,7 @@ export default function App() {
             <Route path="biblia/:book" element={<BookPage />} />
             <Route path="ler/:book/:chapter" element={<Reader />} />
             <Route path="devocional" element={<DevotionalHub />} />
-            <Route path="devocional/hoje" element={<DevotionalPage />} />
+            <Route path="devocional/:id" element={<DevotionalPage />} />
             <Route path="plano" element={<PlanPage />} />
             <Route path="progresso" element={<ProgressPage />} />
             <Route path="buscar" element={<SearchPage />} />

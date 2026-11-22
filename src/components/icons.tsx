@@ -37,6 +37,7 @@ const P: Record<string, ReactNode> = {
   gear: <><path d="M4 7h9M17 7h3M4 17h3M11 17h9" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="17" r="2" /></>,
   list: <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />,
   video: <><rect x="2.5" y="5" width="19" height="14" rx="4" /><path d="M10 9.2v5.6l5-2.8z" /></>,
+  folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
   note: <><path d="M5 3h14v18l-4-3-3 3-3-3-4 3z" /><path d="M9 8h6M9 12h6" /></>,
   music: <><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></>,
 };
