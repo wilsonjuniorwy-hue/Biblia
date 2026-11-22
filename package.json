@@ -10,7 +10,8 @@
     "test": "vitest run",
     "data": "node scripts/build-bible.mjs",
     "icons": "node scripts/gen-icons.mjs",
-    "audio": "node --experimental-strip-types scripts/build-devotional-audio.mjs"
+    "audio": "npx tsx scripts/build-devotional-audio.mjs",
+    "audio:audit": "node scripts/audit-audio.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.7",

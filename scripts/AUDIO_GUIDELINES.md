@@ -12,12 +12,12 @@ Este documento registra as lições aprendidas e as regras obrigatórias para a 
 
 ---
 
-## 2. Prevenção de Desvio para Inglês em Vozes Multilíngues
-- **Problema observado:** Modelos multilíngues (como `pt-BR-ThalitaMultilingualNeural`) utilizam detecção automática de idioma por sentença. Rótulos curtos seguidos de ponto final seco (como `"Oração."` ou `"Para pensar:"`) podem ser classificados erroneamente como texto estrangeiro, fazendo o sintetizador falar com sotaque americano ou tentar ler em inglês.
-- **Regra obrigatória:**
-  - Todo texto passa pela função `refineDevotionalSpeech(text)`.
-  - Rótulos isolados no início da oração são convertidos de `"Oração."` para `"Oração..."` com reticências.
-  - As reticências fornecem continuidade fonética em português e evitam a ambiguidade do classificador de linguagem do Azure/Edge TTS.
+## 2. Prevenção de Desvio para Inglês em Vozes Multilíngues (Entrada Direta da Prece)
+- **Problema observado:** Modelos multilíngues (como `pt-BR-ThalitaMultilingualNeural`) utilizam detecção automática de idioma por sentença. Rótulos curtos com ponto final seco (como `"Oração."`) eram classificados erroneamente como texto em inglês, fazendo o sintetizador falar com sotaque americano ou distorcido.
+- **Regra obrigatória (Opção 1 aprovada):**
+  - Como o cabeçalho visual da tela já exibe claramente o título "Oração", a narração **entra diretamente no texto da oração** (ex.: *"Senhor, tu és o meu Pastor..."*), sem prefixos mecânicos como "Oração.".
+  - Isso elimina 100% qualquer risco de desvio para o inglês e torna a experiência muito mais pessoal, calorosa e intimista.
+  - Para rótulos que precisam ser falados (como `"Para pensar:"`), o pré-processador substitui os dois pontos por reticências (`"Para pensar..."`), forçando contexto e entonação em português.
 
 ---
 

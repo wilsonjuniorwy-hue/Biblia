@@ -1,0 +1,69 @@
+{
+  "devotionalId": "nao-temas-is41",
+  "title": "Não temas, eu estou contigo",
+  "voice": "pt-BR-ThalitaMultilingualNeural",
+  "provider": "edge",
+  "rate": 0.86,
+  "common": {
+    "titulo": {
+      "file": "titulo.mp3",
+      "duration": 2.71
+    },
+    "leitura-intro": {
+      "file": "leitura-intro.mp3",
+      "duration": 5.33
+    },
+    "p0": {
+      "file": "p0.mp3",
+      "duration": 29.14
+    },
+    "p1": {
+      "file": "p1.mp3",
+      "duration": 30.86
+    },
+    "p2": {
+      "file": "p2.mp3",
+      "duration": 28.82
+    },
+    "p3": {
+      "file": "p3.mp3",
+      "duration": 28.3
+    },
+    "p4": {
+      "file": "p4.mp3",
+      "duration": 27.22
+    },
+    "p5": {
+      "file": "p5.mp3",
+      "duration": 26.28
+    },
+    "pergunta": {
+      "file": "pergunta.mp3",
+      "duration": 11.21
+    },
+    "oracao": {
+      "file": "oracao.mp3",
+      "duration": 20.02
+    }
+  },
+  "translations": {
+    "blivre": {
+      "v10": {
+        "file": "blivre/v10.mp3",
+        "duration": 11.4
+      }
+    },
+    "tb": {
+      "v10": {
+        "file": "tb/v10.mp3",
+        "duration": 11.47
+      }
+    },
+    "arc": {
+      "v10": {
+        "file": "arc/v10.mp3",
+        "duration": 10.87
+      }
+    }
+  }
+}

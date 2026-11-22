@@ -1,0 +1,81 @@
+{
+  "devotionalId": "paz-fp4",
+  "title": "A paz que guarda o coração",
+  "voice": "pt-BR-ThalitaMultilingualNeural",
+  "provider": "edge",
+  "rate": 0.86,
+  "common": {
+    "titulo": {
+      "file": "titulo.mp3",
+      "duration": 2.66
+    },
+    "leitura-intro": {
+      "file": "leitura-intro.mp3",
+      "duration": 5.78
+    },
+    "p0": {
+      "file": "p0.mp3",
+      "duration": 29.69
+    },
+    "p1": {
+      "file": "p1.mp3",
+      "duration": 33.02
+    },
+    "p2": {
+      "file": "p2.mp3",
+      "duration": 24.31
+    },
+    "p3": {
+      "file": "p3.mp3",
+      "duration": 29.59
+    },
+    "p4": {
+      "file": "p4.mp3",
+      "duration": 32.59
+    },
+    "p5": {
+      "file": "p5.mp3",
+      "duration": 32.93
+    },
+    "pergunta": {
+      "file": "pergunta.mp3",
+      "duration": 9.31
+    },
+    "oracao": {
+      "file": "oracao.mp3",
+      "duration": 21.72
+    }
+  },
+  "translations": {
+    "blivre": {
+      "v6": {
+        "file": "blivre/v6.mp3",
+        "duration": 10.97
+      },
+      "v7": {
+        "file": "blivre/v7.mp3",
+        "duration": 8.11
+      }
+    },
+    "tb": {
+      "v6": {
+        "file": "tb/v6.mp3",
+        "duration": 11.16
+      },
+      "v7": {
+        "file": "tb/v7.mp3",
+        "duration": 8.5
+      }
+    },
+    "arc": {
+      "v6": {
+        "file": "arc/v6.mp3",
+        "duration": 9.67
+      },
+      "v7": {
+        "file": "arc/v7.mp3",
+        "duration": 8.35
+      }
+    }
+  }
+}

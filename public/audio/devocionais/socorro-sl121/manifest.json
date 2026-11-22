@@ -1,0 +1,81 @@
+{
+  "devotionalId": "socorro-sl121",
+  "title": "De onde vem o meu socorro?",
+  "voice": "pt-BR-ThalitaMultilingualNeural",
+  "provider": "edge",
+  "rate": 0.86,
+  "common": {
+    "titulo": {
+      "file": "titulo.mp3",
+      "duration": 2.21
+    },
+    "leitura-intro": {
+      "file": "leitura-intro.mp3",
+      "duration": 6.22
+    },
+    "p0": {
+      "file": "p0.mp3",
+      "duration": 31.61
+    },
+    "p1": {
+      "file": "p1.mp3",
+      "duration": 31.01
+    },
+    "p2": {
+      "file": "p2.mp3",
+      "duration": 31.44
+    },
+    "p3": {
+      "file": "p3.mp3",
+      "duration": 23.3
+    },
+    "p4": {
+      "file": "p4.mp3",
+      "duration": 38.35
+    },
+    "p5": {
+      "file": "p5.mp3",
+      "duration": 32.28
+    },
+    "pergunta": {
+      "file": "pergunta.mp3",
+      "duration": 11.06
+    },
+    "oracao": {
+      "file": "oracao.mp3",
+      "duration": 23.4
+    }
+  },
+  "translations": {
+    "blivre": {
+      "v1": {
+        "file": "blivre/v1.mp3",
+        "duration": 4.82
+      },
+      "v2": {
+        "file": "blivre/v2.mp3",
+        "duration": 4.34
+      }
+    },
+    "tb": {
+      "v1": {
+        "file": "tb/v1.mp3",
+        "duration": 5.16
+      },
+      "v2": {
+        "file": "tb/v2.mp3",
+        "duration": 4.3
+      }
+    },
+    "arc": {
+      "v1": {
+        "file": "arc/v1.mp3",
+        "duration": 5.26
+      },
+      "v2": {
+        "file": "arc/v2.mp3",
+        "duration": 4.3
+      }
+    }
+  }
+}

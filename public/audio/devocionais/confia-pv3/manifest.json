@@ -1,0 +1,81 @@
+{
+  "devotionalId": "confia-pv3",
+  "title": "Confia de todo o coração",
+  "voice": "pt-BR-ThalitaMultilingualNeural",
+  "provider": "edge",
+  "rate": 0.86,
+  "common": {
+    "titulo": {
+      "file": "titulo.mp3",
+      "duration": 2.57
+    },
+    "leitura-intro": {
+      "file": "leitura-intro.mp3",
+      "duration": 5.95
+    },
+    "p0": {
+      "file": "p0.mp3",
+      "duration": 26.62
+    },
+    "p1": {
+      "file": "p1.mp3",
+      "duration": 28.25
+    },
+    "p2": {
+      "file": "p2.mp3",
+      "duration": 28.61
+    },
+    "p3": {
+      "file": "p3.mp3",
+      "duration": 30
+    },
+    "p4": {
+      "file": "p4.mp3",
+      "duration": 32.76
+    },
+    "p5": {
+      "file": "p5.mp3",
+      "duration": 24.31
+    },
+    "pergunta": {
+      "file": "pergunta.mp3",
+      "duration": 10.75
+    },
+    "oracao": {
+      "file": "oracao.mp3",
+      "duration": 21.48
+    }
+  },
+  "translations": {
+    "blivre": {
+      "v5": {
+        "file": "blivre/v5.mp3",
+        "duration": 5.95
+      },
+      "v6": {
+        "file": "blivre/v6.mp3",
+        "duration": 6.31
+      }
+    },
+    "tb": {
+      "v5": {
+        "file": "tb/v5.mp3",
+        "duration": 6.65
+      },
+      "v6": {
+        "file": "tb/v6.mp3",
+        "duration": 5.88
+      }
+    },
+    "arc": {
+      "v5": {
+        "file": "arc/v5.mp3",
+        "duration": 6.17
+      },
+      "v6": {
+        "file": "arc/v6.mp3",
+        "duration": 5.93
+      }
+    }
+  }
+}

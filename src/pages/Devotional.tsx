@@ -32,7 +32,7 @@ export default function DevotionalPage() {
     }
     dev.paragraphs.forEach((p, i) => out.push({ id: `p${i}`, text: p }));
     out.push({ id: 'pergunta', text: `Para pensar: ${dev.question}` });
-    out.push({ id: 'oracao', text: `Oração. ${dev.prayer}` });
+    out.push({ id: 'oracao', text: dev.prayer });
     return out;
   }, [dev, passage]);
 

@@ -16,7 +16,7 @@
  * - elevenlabs: ElevenLabs API (requer ELEVENLABS_API_KEY e ELEVENLABS_VOICE_ID em .env).
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, statSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync, spawn } from 'node:child_process';
@@ -109,9 +109,11 @@ const providers = {
     if (!key) throw new Error('AZURE_SPEECH_KEY não encontrada no .env');
 
     const spokenText = refineDevotionalSpeech(text);
-    const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="pt-BR">
+    const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="pt-BR">
       <voice name="${VOICE}">
-        <prosody rate="${RATE}" pitch="${PITCH}">${escapeXml(spokenText)}</prosody>
+        <lang xml:lang="pt-BR">
+          <prosody rate="${RATE}" pitch="${PITCH}">${escapeXml(spokenText)}</prosody>
+        </lang>
       </voice>
     </speak>`;
 
@@ -250,18 +252,24 @@ function getBookName(bookIndex) {
   return names[bookIndex] || `Livro ${bookIndex}`;
 }
 
-function formatRefLabel(ref) {
+function formatRefSpoken(ref) {
   const bName = getBookName(ref.book);
   const singularName = bName === 'Salmos' ? 'Salmo' : bName;
-  if (ref.from === ref.to) return `${singularName} ${ref.chapter}:${ref.from}`;
-  return `${singularName} ${ref.chapter}:${ref.from}-${ref.to}`;
+  if (ref.from === ref.to) return `${singularName} ${ref.chapter}, versículo ${ref.from}`;
+  return `${singularName} ${ref.chapter}, versículos ${ref.from} a ${ref.to}`;
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function synthesizeText(text, filePath, force = false) {
   if (existsSync(filePath) && !force) {
-    return;
+    try {
+      if (statSync(filePath).size > 0) {
+        return;
+      }
+    } catch {
+      // Se falhar ao ler tamanho, re-sintetiza
+    }
   }
   const synthFn = providers[PROVIDER];
   if (!synthFn) throw new Error(`Provedor desconhecido: ${PROVIDER}`);
@@ -283,11 +291,22 @@ async function synthesizeText(text, filePath, force = false) {
 
 async function main() {
   const force = process.argv.includes('--force');
-  const devotionals = await loadDevotionals();
+  const idArg = process.argv.find((a) => a.startsWith('--id='))?.split('=')[1]
+    || process.argv.find((a) => !a.startsWith('-') && a !== 'scripts/build-devotional-audio.mjs' && !a.endsWith('node.exe') && !a.endsWith('tsx'));
+
+  let devotionals = await loadDevotionals();
+  if (idArg) {
+    devotionals = devotionals.filter((d) => d.id === idArg);
+    if (!devotionals.length) {
+      console.error(`[erro] Nenhum devocional encontrado com o ID '${idArg}'.`);
+      process.exit(1);
+    }
+  }
+
   const synth = providers[PROVIDER];
   if (!synth) throw new Error(`Provedor '${PROVIDER}' não suportado.`);
 
-  console.log(`Carregados ${devotionals.length} devocionais.`);
+  console.log(`Processando ${devotionals.length} devocional(is)${idArg ? ` (filtro: ${idArg})` : ''}:`);
 
   for (const dev of devotionals) {
     const devDir = join(ROOT, 'public/audio/devocionais', dev.id);
@@ -299,7 +318,8 @@ async function main() {
     // Regra anti-mistura de voz: se a voz gravada anteriormente for diferente, regera tudo
     if (existsSync(manifestPath) && !devForce) {
       try {
-        const existingManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+        const rawJson = readFileSync(manifestPath, 'utf8').replace(/^\uFEFF/, '');
+        const existingManifest = JSON.parse(rawJson);
         if (existingManifest.voice && existingManifest.voice !== VOICE) {
           console.log(`  [consistência] Voz alterada de '${existingManifest.voice}' para '${VOICE}'. Forçando regeração completa para evitar mistura de vozes.`);
           devForce = true;
@@ -324,7 +344,7 @@ async function main() {
     // 1. Trechos comuns
     const commonParts = [
       { id: 'titulo', text: dev.title },
-      { id: 'leitura-intro', text: `Leitura bíblica: ${formatRefLabel(dev.ref)}.` },
+      { id: 'leitura-intro', text: `Leitura bíblica: ${formatRefSpoken(dev.ref)}.` },
     ];
 
     dev.paragraphs.forEach((p, idx) => {
@@ -332,7 +352,7 @@ async function main() {
     });
 
     commonParts.push({ id: 'pergunta', text: `Para pensar: ${dev.question}` });
-    commonParts.push({ id: 'oracao', text: `Oração. ${dev.prayer}` });
+    commonParts.push({ id: 'oracao', text: dev.prayer });
 
     for (const part of commonParts) {
       const fileName = `${part.id}.mp3`;
@@ -382,7 +402,6 @@ async function main() {
     }
 
     // Salva o manifest.json
-    const manifestPath = join(devDir, 'manifest.json');
     writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
     console.log(`Manifesto salvo em: ${manifestPath}`);
   }
