@@ -27,7 +27,7 @@ export default function More() {
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `lampada-backup-${toDateStr()}.json`;
+    a.href = url; a.download = `farol-de-fe-backup-${toDateStr()}.json`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
     await setSetting('lastBackupAt', Date.now());
@@ -38,7 +38,7 @@ export default function More() {
     if (!f) return;
     try {
       const parsed: unknown = JSON.parse(await f.text());
-      if (!validateBackup(parsed)) { toast('Arquivo inválido: não é um backup do Lâmpada.'); return; }
+      if (!validateBackup(parsed)) { toast('Arquivo inválido: não é um backup do Farol de Fé.'); return; }
       setDlg({ backup: parsed });
     } catch {
       toast('Não foi possível ler o arquivo.');

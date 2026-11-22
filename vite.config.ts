@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
-        name: 'Lâmpada — Bíblia',
-        short_name: 'Lâmpada',
+        name: 'Farol de Fé',
+        short_name: 'Farol de Fé',
         description: 'Leia a Bíblia completa, acompanhe seu progresso e siga planos de leitura.',
         id: './',
         lang: 'pt-BR',

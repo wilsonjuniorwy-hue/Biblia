@@ -116,32 +116,41 @@ export function BookArt({ className }: { className?: string }) {
   );
 }
 
-/** Lamparina acesa à noite (devocional). */
-export function LampArt({ className }: { className?: string }) {
+/** Farol à noite, com os feixes de luz sobre o mar (devocional). */
+export function FarolArt({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden focusable="false">
       <defs>
-        <linearGradient id="lamp-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#120f33" />
-          <stop offset=".6" stopColor="#3a2f6b" />
-          <stop offset="1" stopColor="#c8743a" />
+        <linearGradient id="fa-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#0b1530" />
+          <stop offset=".65" stopColor="#25407a" />
+          <stop offset="1" stopColor="#d9843a" />
         </linearGradient>
-        <radialGradient id="lamp-glow" cx="50%" cy="50%" r="50%">
+        <radialGradient id="fa-glow" cx="50%" cy="50%" r="50%">
           <stop offset="0" stopColor="#fff1c2" stopOpacity=".95" />
           <stop offset="1" stopColor="#ffb84d" stopOpacity="0" />
         </radialGradient>
+        <linearGradient id="fa-bl" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stopColor="#ffe9a8" stopOpacity=".55" /><stop offset="1" stopColor="#ffe9a8" stopOpacity="0" /></linearGradient>
+        <linearGradient id="fa-br" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#ffe9a8" stopOpacity=".55" /><stop offset="1" stopColor="#ffe9a8" stopOpacity="0" /></linearGradient>
       </defs>
-      <rect width="400" height="240" fill="url(#lamp-sky)" />
-      {stars([[40, 34, 1.4], [96, 70, 1], [310, 30, 1.5], [356, 76, 1.1], [250, 22, 1], [150, 28, 1.2]])}
-      <circle cx="200" cy="128" r="110" fill="url(#lamp-glow)" />
-      <path d="M0 200 C90 186 160 198 230 196 C300 194 350 184 400 192 L400 240 L0 240Z" fill="#241d4a" />
-      <g fill="#0e0b26">
-        <path d="M150 196 C150 176 170 166 200 166 C236 166 262 176 262 196Z" />
-        <path d="M258 182 C280 178 292 168 290 160 C288 170 276 174 258 176Z" />
-        <rect x="170" y="190" width="70" height="8" rx="3" />
-      </g>
-      <path d="M200 98 C214 116 222 126 214 142 C210 150 190 150 186 142 C178 126 192 116 200 98Z" fill="#ffb84d" />
-      <path d="M200 120 C207 130 208 138 203 144 C199 148 194 146 193 141 C192 134 197 130 200 120Z" fill="#fff6dc" />
+      <rect width="400" height="240" fill="url(#fa-sky)" />
+      {stars([[40, 30, 1.4], [96, 66, 1], [320, 28, 1.5], [366, 70, 1.1], [250, 18, 1], [150, 24, 1.2]])}
+      <circle cx="200" cy="96" r="92" fill="url(#fa-glow)" />
+      <polygon points="200,96 0,58 0,134" fill="url(#fa-bl)" />
+      <polygon points="200,96 400,58 400,134" fill="url(#fa-br)" />
+      <path d="M0 192 C80 184 150 194 220 190 C290 186 350 180 400 188 L400 240 L0 240Z" fill="#1c2e58" />
+      <path d="M0 214 C100 204 300 206 400 214 L400 240 L0 240Z" fill="#0e1a36" />
+      <path d="M130 214 C150 196 176 190 200 192 C226 190 252 196 272 214Z" fill="#0e1a36" />
+      <polygon points="183,200 217,200 210,112 190,112" fill="#f5ecd7" />
+      <polygon points="187,172 213,172 214,184 186,184" fill="#e58f3d" />
+      <polygon points="184,150 216,150 217,160 183,160" fill="#e58f3d" />
+      <path d="M194 200 V188 a6 6 0 0 1 12 0 V200Z" fill="#0e1a36" />
+      <rect x="184" y="108" width="32" height="6" rx="2" fill="#f5ecd7" />
+      <rect x="192" y="84" width="16" height="26" rx="3" fill="#ffb84d" />
+      <rect x="196" y="88" width="8" height="18" rx="2" fill="#fff6dc" />
+      <polygon points="188,84 200,72 212,84" fill="#f5ecd7" />
+      <rect x="199" y="58" width="2" height="16" fill="#f5ecd7" />
+      <rect x="195" y="63" width="10" height="2" fill="#f5ecd7" />
     </svg>
   );
 }

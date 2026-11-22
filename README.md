@@ -1,4 +1,6 @@
-# Lâmpada — Bíblia (PWA)
+# Farol de Fé (PWA)
+
+Na Play Store o app aparece como **Bíblia - Farol de Fé**; instalado e dentro do app, o nome é só **Farol de Fé**.
 
 Leitor da Bíblia completa (TB e ARC 1911 em domínio público; Bíblia Livre sob CC BY 4.0), com planos de leitura de 1 ano
 (sequencial, cronológico e misto), mapa do que já foi lido / falta ler, tópicos para o dia a dia,

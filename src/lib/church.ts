@@ -82,7 +82,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 export function makeIcs(ev: EventRow, now: Date = new Date()): string {
   const d = ev.date.replace(/-/g, '');
   const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}00Z`;
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Lampada//Agenda//PT-BR', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT', `UID:${ev.id}@lampada`, `DTSTAMP:${stamp}`];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//FarolDeFe//Agenda//PT-BR', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT', `UID:${ev.id}@lampada`, `DTSTAMP:${stamp}`];
   if (ev.time) {
     const [h, m] = ev.time.split(':').map(Number);
     const endH = h + 2;

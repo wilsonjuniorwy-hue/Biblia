@@ -7,7 +7,7 @@ import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
 import { PLAN_INFO, planStatus } from '../data/plans';
 import { upcomingOccurrences, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
-import { BookArt, ChurchArt, Dawn, LampArt } from '../components/art';
+import { BookArt, ChurchArt, Dawn, FarolArt } from '../components/art';
 import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
 import { dayOfYear } from '../lib/date';
 import { useInstall } from '../lib/install';
@@ -61,7 +61,7 @@ export default function Welcome() {
         <Dawn className="hero-art" />
         <div className="hero-fade" />
         <div className="hero-copy">
-          <p className="brand">Lâmpada</p>
+          <p className="brand">Farol de Fé</p>
           <h1>{greeting(now.getHours())}!</h1>
           {verse ? (
             <blockquote>
@@ -95,7 +95,7 @@ export default function Welcome() {
           </div>
         </Link>
         <Link to="/devocional" className="door">
-          <LampArt className="door-art" />
+          <FarolArt className="door-art" />
           <div className="door-body">
             <h2>Devocional{settings.lastArea === 'devocional' ? <span className="last-badge">última vez</span> : null}</h2>
             <p>Uma palavra para o seu dia, com áudio</p>

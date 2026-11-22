@@ -47,7 +47,7 @@ function footer(ctx: CanvasRenderingContext2D, look: Look) {
   ctx.textAlign = 'center';
   ctx.font = `28px ${SANS}`;
   ctx.fillStyle = look.sub;
-  ctx.fillText(host ? `Lâmpada · ${host}` : 'Lâmpada · Bíblia', S / 2, 1000);
+  ctx.fillText(host ? `Farol de Fé · ${host}` : 'Farol de Fé', S / 2, 1000);
 }
 
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {

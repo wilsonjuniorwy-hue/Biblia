@@ -62,7 +62,7 @@ export function About() {
     <>
       <PageHeader title="Licenças e créditos" back="/mais" />
       <main className="page prose">
-        <h2>Lâmpada — Bíblia</h2>
+        <h2>Farol de Fé</h2>
         <p>Aplicativo gratuito para leitura da Bíblia, com planos de leitura e acompanhamento de progresso. Funciona offline e guarda tudo no seu próprio aparelho.</p>
         <h3>Textos bíblicos em domínio público</h3>
         <ul>

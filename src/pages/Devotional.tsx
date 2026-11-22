@@ -49,7 +49,7 @@ export default function DevotionalPage() {
   };
 
   const shareAll = async () => {
-    const body = `${dev.title}\n\n${label}\n\n${dev.paragraphs.join('\n\n')}\n\nPara pensar: ${dev.question}\n\nOração: ${dev.prayer}\n\n— Lâmpada`;
+    const body = `${dev.title}\n\n${label}\n\n${dev.paragraphs.join('\n\n')}\n\nPara pensar: ${dev.question}\n\nOração: ${dev.prayer}\n\n— Farol de Fé`;
     const r = await shareText(body);
     if (r === 'copied') toast('Copiado!');
     if (r === 'failed') toast('Não foi possível compartilhar');
