@@ -154,3 +154,34 @@ export function FarolArt({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/** Céu com uma estrela que guia (card "Mais"). */
+export function MoreArt({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden focusable="false">
+      <defs>
+        <linearGradient id="mo-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#120f33" />
+          <stop offset=".7" stopColor="#4d4189" />
+          <stop offset="1" stopColor="#d9843a" />
+        </linearGradient>
+        <radialGradient id="mo-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="#fff1c2" stopOpacity=".9" />
+          <stop offset="1" stopColor="#ffb84d" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="400" height="240" fill="url(#mo-sky)" />
+      {stars([[50, 36, 1.4], [120, 76, 1], [320, 34, 1.5], [360, 92, 1.1], [270, 24, 1], [24, 120, 1.2], [180, 30, 1]])}
+      <circle cx="200" cy="98" r="96" fill="url(#mo-glow)" />
+      <path d="M200 44 C204 80 214 92 252 98 C214 104 204 116 200 152 C196 116 186 104 148 98 C186 92 196 80 200 44Z" fill="#fff6dc" />
+      <path d="M0 190 C90 172 170 188 240 184 C310 180 360 170 400 180 L400 240 L0 240Z" fill="#2b2466" />
+      <path d="M0 214 C110 200 290 204 400 212 L400 240 L0 240Z" fill="#14103a" />
+      <g fill="#ffb84d">
+        <circle cx="96" cy="206" r="4" />
+        <circle cx="156" cy="210" r="4" />
+        <circle cx="244" cy="210" r="4" />
+        <circle cx="304" cy="206" r="4" />
+      </g>
+    </svg>
+  );
+}

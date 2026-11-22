@@ -7,7 +7,7 @@ import { BOOKS, TOTAL_CHAPTERS, fromChapterId } from '../data/books';
 import { PLAN_INFO, planStatus } from '../data/plans';
 import { upcomingOccurrences, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
-import { Dawn } from '../components/art';
+import { BookArt, ChurchArt, Dawn, FarolArt, MoreArt } from '../components/art';
 import { Icon } from '../components/icons';
 import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
 import { welcomeVerseOfTheDay } from '../data/welcomeVerses';
@@ -88,27 +88,35 @@ export default function Welcome() {
 
       <main className="tiles" aria-label="Escolha por onde começar">
         <Link to="/igreja" className="tile t-church">
-          <Icon name="church" size={38} className="tile-icon" />
+          <ChurchArt className="tile-art" />
+          <div className="tile-body">
           <h2>Igreja</h2>
           <span className="tile-meta">{next ? `${next.event.title}, ${whenLabel(next.offset, next.date)}${next.event.time ? ` às ${next.event.time}` : ''}` : 'Seus eventos e a Bíblia'}</span>
+          </div>
           {settings.lastArea === 'igreja' ? <span className="last-badge">última vez</span> : null}
         </Link>
         <Link to="/estudos" className="tile t-study">
-          <Icon name="book" size={38} className="tile-icon" />
+          <BookArt className="tile-art" />
+          <div className="tile-body">
           <h2>Estudos</h2>
           <span className="tile-meta">{studyMeta}</span>
+          </div>
           {settings.lastArea === 'estudos' ? <span className="last-badge">última vez</span> : null}
         </Link>
         <Link to="/devocional" className="tile t-devo">
-          <Icon name="lighthouse" size={38} className="tile-icon" />
+          <FarolArt className="tile-art" />
+          <div className="tile-body">
           <h2>Devocional</h2>
           <span className="tile-meta">{dev.title} · ~{devotionalMinutes(dev)} min</span>
+          </div>
           {settings.lastArea === 'devocional' ? <span className="last-badge">última vez</span> : null}
         </Link>
         <Link to="/menu" className="tile t-more">
-          <Icon name="grid" size={38} className="tile-icon" />
+          <MoreArt className="tile-art" />
+          <div className="tile-body">
           <h2>Mais</h2>
           <span className="tile-meta">Plano, tópicos, busca e ajustes</span>
+          </div>
         </Link>
       </main>
 
