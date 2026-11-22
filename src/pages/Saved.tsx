@@ -64,12 +64,16 @@ export function About() {
       <main className="page prose">
         <h2>Lâmpada — Bíblia</h2>
         <p>Aplicativo gratuito para leitura da Bíblia, com planos de leitura e acompanhamento de progresso. Funciona offline e guarda tudo no seu próprio aparelho.</p>
-        <h3>Textos bíblicos (domínio público)</h3>
+        <h3>Textos bíblicos em domínio público</h3>
         <ul>
           <li><strong>Tradução Brasileira (TB)</strong> — Sociedade Bíblica do Brasil, tradução concluída em 1917; texto em domínio público.</li>
           <li><strong>Almeida Revista e Corrigida, edição de 1911 (ARC)</strong> — tradução de João Ferreira de Almeida; texto histórico em domínio público, com a ortografia da época.</li>
         </ul>
-        <p>Os arquivos foram obtidos do projeto de código aberto <em>damarals/biblias</em> (licença MIT para o conjunto de dados). Os textos modernos protegidos (NVI, NAA, NTLH, ARA e outros) não são utilizados.</p>
+        <h3>Texto de licença livre</h3>
+        <ul>
+          <li><strong>Bíblia Livre (BLIVRE)</strong> — Copyright © Diego Santos, Mario Sérgio e Marco Teles, 2018. Tradução em português atual, a partir da Almeida de 1819 (Textus Receptus). Licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br" target="_blank" rel="noreferrer">Creative Commons Atribuição 4.0</a>. Obtida do <a href="https://ebible.org/porbr2018/" target="_blank" rel="noreferrer">eBible.org</a>. O texto passou por correções de digitação e de espaçamento neste aplicativo; os autores originais não endossam essas alterações.</li>
+        </ul>
+        <p>Os textos da TB e da ARC foram obtidos do projeto de código aberto <em>damarals/biblias</em> (licença MIT para o conjunto de dados). Os textos modernos protegidos (NVI, NAA, NTLH, ARA e outros) não são utilizados.</p>
         <h3>Tópicos e planos</h3>
         <p>As seleções de versículos por tema e os planos de leitura (sequencial, cronológico e misto) foram montados para este app. A ordem cronológica é aproximada: estudiosos divergem sobre a datação de alguns livros.</p>
         <h3>Privacidade</h3>

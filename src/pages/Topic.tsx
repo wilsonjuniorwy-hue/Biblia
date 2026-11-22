@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
-import { loadBook, translationById, TRANSLATIONS } from '../data/bible';
+import { loadBook, translationById, TRANSLATIONS, type TranslationId } from '../data/bible';
 import { BOOKS } from '../data/books';
 import { refLabel, topicById, type VerseRef } from '../data/topics';
 import { setSetting } from '../db/db';
@@ -33,7 +33,7 @@ export default function TopicPage() {
   );
 }
 
-function VerseItem({ r, tr, toast }: { r: VerseRef; tr: 'tb' | 'arc'; toast: (m: string) => void }) {
+function VerseItem({ r, tr, toast }: { r: VerseRef; tr: TranslationId; toast: (m: string) => void }) {
   const [text, setText] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;

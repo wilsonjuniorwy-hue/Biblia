@@ -49,7 +49,7 @@ export interface Settings {
   readerFont: ReaderFont;
   lineHeight: LineHeight;
   textWidth: TextWidth;
-  /** Mostra as duas traduções, verso a verso. */
+  /** Mostra as outras traduções abaixo de cada versículo. */
   compare: boolean;
   /** Para onde o app abre. */
   startArea: StartArea;
@@ -60,7 +60,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  translation: 'tb',
+  translation: 'blivre',
   fontSize: 19,
   theme: 'auto',
   autoMark: false,

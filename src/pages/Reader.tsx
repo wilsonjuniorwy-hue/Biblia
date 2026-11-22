@@ -41,10 +41,11 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
   const [sp] = useSearchParams();
   const { settings, read, mark, unmark, toast } = useApp();
   const tr = settings.translation;
-  const other = TRANSLATIONS.find((t) => t.id !== tr)!;
   const [retry, setRetry] = useState(0);
   const { data: verses, error, loading } = useChapter(tr, book, chapter, retry);
-  const { data: otherVerses } = useChapter(other.id, book, chapter, retry, settings.compare);
+  // Comparação: as demais traduções (a lista é fixa, então a ordem dos hooks não muda entre renderizações).
+  const others = TRANSLATIONS.map((t) => ({ t, verses: useChapter(t.id, book, chapter, retry, settings.compare && t.id !== tr).data }))
+    .filter((o) => o.t.id !== tr);
   const marks = useChapterMarks(book, chapter);
   const [sel, setSel] = useState<number | null>(null);
   const [noteDraft, setNoteDraft] = useState('');
@@ -156,7 +157,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
 
   const prev = id > 0 ? fromChapterId(id - 1) : null;
   const next = id < TOTAL_CHAPTERS - 1 ? fromChapterId(id + 1) : null;
-  const count = Math.max(verses?.length ?? 0, settings.compare ? otherVerses?.length ?? 0 : 0);
+  const count = Math.max(verses?.length ?? 0, settings.compare ? Math.max(0, ...others.map((o) => o.verses?.length ?? 0)) : 0);
   const rootStyle = {
     '--lh': LINE_HEIGHT[settings.lineHeight],
     '--w': `${TEXT_WIDTH[settings.textWidth]}px`,
@@ -210,7 +211,7 @@ function ReaderInner({ book, chapter }: { book: number; chapter: number }) {
                 {text ?? <span className="muted">—</span>}
                 {m?.fav ? <span className="vflag" aria-label="Favorito"> ❤</span> : null}
                 {m?.note ? <span className="vflag" aria-label="Tem nota"> 📝</span> : null}
-                {settings.compare && otherVerses ? <span className="alt"><b>{other.short}</b> {otherVerses[i] ?? '—'}</span> : null}
+                {settings.compare ? others.map((o) => (o.verses ? <span key={o.t.id} className="alt"><b>{o.t.short}</b> {o.verses[i] ?? '—'}</span> : null)) : null}
               </p>
             );
           }) : null}

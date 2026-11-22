@@ -1,7 +1,7 @@
 // Gera os arquivos por livro (public/bible/<trad>/<n>.json) e a estrutura de versículos.
 // Os textos de origem têm defeitos conhecidos: as correções ficam em data-source/fixes.json e nas regras abaixo.
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
-const SRC = { tb: 'data-source/TB.json', arc: 'data-source/ALM1911.json' };
+const SRC = { tb: 'data-source/TB.json', arc: 'data-source/ALM1911.json', blivre: 'data-source/BLIVRE.json' };
 const fixes = JSON.parse(readFileSync('data-source/fixes.json', 'utf8'));
 const clean = (s) => s.replace(/\s+/g, ' ').trim();
 
@@ -14,6 +14,18 @@ const fixStars = (s) => s
   .replace(/-\*/g, '-').replace(/\*/g, ''); // o resto era hífen de verdade ("peço-*te")
 /** Espaço antes de pontuação. */
 const fixPunct = (s) => s.replace(/\s+([,.;:!?])/g, '$1');
+
+/** BLIVRE: falta de espaço depois da pontuação e palavras repetidas por engano ("sobre sobre"). */
+const KEEP_REPEAT = new Set(['se', 'a', 'o', 'os', 'as', 'no', 'na', 'nos', 'um']); // repetições legítimas ("deu-a a", "se se"…)
+const fixBlivre = (s) => s
+  .replace(/([,;:!?])(?=[A-Za-zÀ-ú])/g, '$1 ')
+  .replace(/([a-zà-ú])\.(?=[A-ZÀ-Ú])/g, '$1. ')
+  .replace(/\(\s+/g, '(').replace(/\s+\)/g, ')') // "( dizia ele )" → "(dizia ele)"
+  .replace(/ -(?=[a-zà-ú])/g, '-') // "Declarando -as" → "Declarando-as"
+  .replace(/([\p{L}]) - (?=(?:o|os|a|as|lo|los|la|las|lhe|lhes|me|te|se|nos|vos)(?![\p{L}]))/gu, '$1-') // "trazei - os" → "trazei-os"
+  .replace(/^- /, '').replace(/ - /g, ' — ') // travessão de verdade; "- " no início era marca de poesia
+  .replace(/\.(?=\()/g, '. ').replace(/\.\.(?!\.)/g, '.').replace(/:;/g, ';').replace(/,\./g, '.')
+  .replace(/(?<![\p{L}-])([\p{L}]+) \1(?![\p{L}-])/giu, (m, w) => (KEEP_REPEAT.has(w.toLowerCase()) ? m : w));
 
 let counts = null;
 let abbrevs = null;
@@ -50,7 +62,7 @@ for (const [id, file] of Object.entries(SRC)) {
 
   rmSync(`public/bible/${id}`, { recursive: true, force: true });
   mkdirSync(`public/bible/${id}`, { recursive: true });
-  const out = books.map((chs) => chs.map((c) => c.map((v) => clean(fixPunct(v)))));
+  const out = books.map((chs) => chs.map((c) => c.map((v) => clean(fixPunct(id === 'blivre' ? fixBlivre(v) : v)))));
   out.forEach((chapters, i) => {
     chapters.forEach((c, ci) => c.forEach((v, vi) => { if (!v) throw new Error(`${id} ${i}:${ci + 1}:${vi + 1} vazio`); }));
     writeFileSync(`public/bible/${id}/${i}.json`, JSON.stringify(chapters));

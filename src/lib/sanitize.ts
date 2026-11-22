@@ -12,7 +12,7 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const MAX_PLAN_DAYS = 730;
 export const COLORS = ['yellow', 'green', 'blue', 'pink'] as const;
 const THEMES: Theme[] = ['auto', 'light', 'dark', 'sepia'];
-const TRANSLATION_IDS: TranslationId[] = ['tb', 'arc'];
+const TRANSLATION_IDS: TranslationId[] = ['tb', 'arc', 'blivre'];
 
 export const isInt = (x: unknown): x is number => typeof x === 'number' && Number.isInteger(x);
 

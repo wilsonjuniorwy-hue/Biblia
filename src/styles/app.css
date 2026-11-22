@@ -156,7 +156,7 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
   background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
 .reader-title { flex: 1; min-width: 0; font: 600 17px var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tr-switch { display: inline-flex; background: var(--surface2); border-radius: 10px; padding: 2px; }
-.tr-switch button { border: 0; background: transparent; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; min-height: 36px; }
+.tr-switch button { border: 0; background: transparent; padding: 6px 8px; border-radius: 8px; font-weight: 700; font-size: 13px; min-height: 36px; }
 .tr-switch button.on { background: var(--surface); box-shadow: var(--shadow); }
 .verses { padding: 18px 18px 8px; font-family: var(--rf, var(--serif)); line-height: var(--lh, 1.7); max-width: var(--w, 640px); margin: 0 auto; }
 .verse { margin: 0 0 .55em; padding: 2px 4px; border-radius: 6px; cursor: pointer; }

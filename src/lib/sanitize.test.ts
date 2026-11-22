@@ -32,7 +32,7 @@ describe('configurações', () => {
   it('padrão quando vazio', () => expect(S({})).toEqual(DEFAULTS));
   it('descarta valores inválidos', () => {
     const s = S({ translation: 'xx', fontSize: 9999, theme: 'neon', autoMark: 'sim', reminderTime: '25:99', plan: { type: 'x' }, lastRead: { book: 99, chapter: 1 }, completedReadings: -3, lastBackupAt: 'ontem' });
-    expect(s.translation).toBe('tb');
+    expect(s.translation).toBe('blivre');
     expect(s.fontSize).toBe(32);          // limitado, não descartado
     expect(s.theme).toBe('auto');
     expect(s.autoMark).toBe(false);

@@ -1,6 +1,6 @@
 # Lâmpada — Bíblia (PWA)
 
-Leitor da Bíblia completa (TB e ARC 1911, domínio público), com planos de leitura de 1 ano
+Leitor da Bíblia completa (TB e ARC 1911 em domínio público; Bíblia Livre sob CC BY 4.0), com planos de leitura de 1 ano
 (sequencial, cronológico e misto), mapa do que já foi lido / falta ler, tópicos para o dia a dia,
 busca, favoritos, destaques, notas e backup. Funciona offline; tudo fica no aparelho (IndexedDB).
 

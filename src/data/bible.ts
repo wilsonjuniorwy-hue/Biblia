@@ -1,7 +1,8 @@
-export type TranslationId = 'tb' | 'arc';
+export type TranslationId = 'tb' | 'arc' | 'blivre';
 export interface Translation { id: TranslationId; short: string; name: string; note: string }
 
 export const TRANSLATIONS: Translation[] = [
+  { id: 'blivre', short: 'BLIVRE', name: 'Bíblia Livre (2018)', note: 'Português atual, a partir da Almeida de 1819 (Textus Receptus). Licença CC BY 4.0.' },
   { id: 'tb', short: 'TB', name: 'Tradução Brasileira', note: 'Linguagem clara, ortografia atual. Trechos entre [colchetes] não constam nos manuscritos mais antigos.' },
   { id: 'arc', short: 'ARC', name: 'Almeida Revista e Corrigida (1911)', note: 'Texto clássico, ortografia da época.' },
 ];

@@ -36,7 +36,7 @@ export function ReaderSettings({ open, onClose }: { open: boolean; onClose: () =
       </div>
       <label className="check">
         <input type="checkbox" checked={settings.compare} onChange={(e) => void setSetting('compare', e.target.checked)} />
-        <span>Comparar as duas traduções, verso a verso</span>
+        <span>Comparar as traduções, verso a verso</span>
       </label>
       <button className="btn primary" onClick={onClose}>Pronto</button>
     </Sheet>
