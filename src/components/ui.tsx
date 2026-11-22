@@ -5,10 +5,13 @@ import { Icon, type IconName } from './icons';
 
 export function PageHeader({ title, sub, back, right }: { title: string; sub?: string; back?: boolean | string; right?: ReactNode }) {
   const nav = useNavigate();
+  const location = useLocation();
+  // back=true volta ao histórico; se a tela foi aberta direto (sem histórico), vai para o início
+  const goBack = () => (typeof back === 'string' ? nav(back) : location.key !== 'default' ? nav(-1) : nav('/'));
   return (
     <header className="page-header">
       {back ? (
-        <button className="icon-btn" aria-label="Voltar" onClick={() => (typeof back === 'string' ? nav(back) : nav(-1))}>
+        <button className="icon-btn" aria-label="Voltar" onClick={goBack}>
           ‹
         </button>
       ) : null}
@@ -28,7 +31,7 @@ const STUDY_TABS: [string, string, string][] = [
   ['/biblia', 'Bíblia', 'book'],
   ['/plano', 'Plano', 'calendar'],
   ['/progresso', 'Progresso', 'chart'],
-  ['/mais', 'Mais', 'menu'],
+  ['/mais', 'Ajustes', 'gear'],
 ];
 const DEVO_TABS: [string, string, string][] = [
   ['/devocional', 'Devocional', 'sun'],

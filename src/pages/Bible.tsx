@@ -1,3 +1,4 @@
+import { areaHome } from '../lib/area';
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
@@ -25,7 +26,7 @@ export function Bible() {
 
   return (
     <>
-      <PageHeader title="Bíblia" />
+      <PageHeader title="Bíblia" back={areaHome()} />
       <main className="page">
         <form className="searchbox" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav(`/buscar?q=${encodeURIComponent(q.trim())}`); }}>
           <input

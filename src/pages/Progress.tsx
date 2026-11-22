@@ -37,7 +37,7 @@ export default function ProgressPage() {
 
   return (
     <>
-      <PageHeader title="Progresso" sub="O que você já leu e o que falta" />
+      <PageHeader title="Progresso" sub="O que você já leu e o que falta" back="/estudos" />
       <main className="page">
         <section className="card row gap center-y">
           <Ring value={s.pct} size={110} label="da Bíblia" />

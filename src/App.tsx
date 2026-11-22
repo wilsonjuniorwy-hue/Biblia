@@ -17,6 +17,7 @@ import More from './pages/More';
 import DevotionalPage from './pages/Devotional';
 import DevotionalHub from './pages/DevotionalHub';
 import MoreMenu from './pages/MoreMenu';
+import VideosPage from './pages/Videos';
 import { About, Saved } from './pages/Saved';
 
 function Shell() {
@@ -80,7 +81,7 @@ function Shell() {
 
   if (dbError) return <StorageProblem />;
   if (!ready) return slow ? <StorageProblem slow /> : <div className="splash" role="status" aria-label="Carregando">📖</div>;
-  const reading = pathname.startsWith('/ler/') || pathname === '/' || pathname === '/menu';
+  const reading = pathname.startsWith('/ler/') || pathname === '/' || pathname === '/menu' || pathname === '/videos';
   return (
     <div className="app">
       <Outlet />
@@ -110,6 +111,7 @@ export default function App() {
             <Route path="buscar" element={<SearchPage />} />
             <Route path="topicos/:id" element={<TopicPage />} />
             <Route path="menu" element={<MoreMenu />} />
+            <Route path="videos" element={<VideosPage />} />
             <Route path="mais" element={<More />} />
             <Route path="salvos" element={<Saved />} />
             <Route path="sobre" element={<About />} />

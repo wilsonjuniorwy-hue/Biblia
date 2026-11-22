@@ -13,7 +13,7 @@ export default function PlanPage() {
   const plan = settings.plan;
   return (
     <>
-      <PageHeader title="Plano de leitura" sub={plan ? PLAN_INFO[plan.type].name : 'Escolha como quer ler'} />
+      <PageHeader title="Plano de leitura" sub={plan ? PLAN_INFO[plan.type].name : 'Escolha como quer ler'} back="/estudos" />
       <main className="page">
         {plan ? <ActivePlan plan={plan} read={read} today={today} /> : <Setup />}
       </main>

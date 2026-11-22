@@ -68,7 +68,7 @@ export default function More() {
 
   return (
     <>
-      <PageHeader title="Mais" />
+      <PageHeader title="Ajustes" back />
       <main className="page">
         <section className="card">
           <h2 className="card-title">Leitura</h2>
