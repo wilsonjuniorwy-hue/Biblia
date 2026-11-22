@@ -9,6 +9,8 @@ import { upcomingOccurrences, whenLabel } from '../lib/church';
 import { overall } from '../lib/stats';
 import { BookArt, ChurchArt, Dawn, FarolArt } from '../components/art';
 import { devotionalMinutes, devotionalOfTheDay } from '../data/devotionals';
+import { welcomeVerseOfTheDay } from '../data/welcomeVerses';
+import { refLabel } from '../data/topics';
 import { dayOfYear } from '../lib/date';
 import { useInstall } from '../lib/install';
 import { Onboarding } from '../components/Onboarding';
@@ -29,13 +31,17 @@ export default function Welcome() {
   const plan = settings.plan;
   const st = plan ? planStatus(plan, read, today) : null;
 
-  // Texto do versículo na tradução escolhida (Salmos 119:105)
+  // Frase de entrada: um versículo novo por dia, na tradução escolhida
+  const vref = welcomeVerseOfTheDay(dayOfYear(today));
   const [verse, setVerse] = useState('');
   useEffect(() => {
     let alive = true;
-    loadBook(settings.translation, 18).then((b) => { if (alive) setVerse(b[118]?.[104] ?? ''); }).catch(() => undefined);
+    setVerse('');
+    loadBook(settings.translation, vref.book).then((b) => {
+      if (alive) setVerse((b[vref.chapter - 1] ?? []).slice(vref.from - 1, vref.to).join(' '));
+    }).catch(() => undefined);
     return () => { alive = false; };
-  }, [settings.translation]);
+  }, [settings.translation, vref.book, vref.chapter, vref.from, vref.to]);
 
   let studyMeta = 'Leia a Bíblia, siga um plano e veja seu progresso';
   if (stats.read > 0 || st) {
@@ -66,7 +72,7 @@ export default function Welcome() {
           {verse ? (
             <blockquote>
               “{verse}”
-              <cite>Salmos 119:105 · {translationById(settings.translation).short}</cite>
+              <cite>{refLabel(vref)} · {translationById(settings.translation).short}</cite>
             </blockquote>
           ) : null}
         </div>
